@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="MyFolder">
+  <path d="M58 53.25H6a2 2 0 0 1-2-2v-38.5a2 2 0 0 1 2-2h22.48a2 2 0 0 1 1.23.42l5.89 4.58H58a2 2 0 0 1 2 2v33.5a2 2 0 0 1-2 2Zm-50-4h48v-29.5H34.91a2 2 0 0 1-1.23-.42l-5.88-4.58H8Z" fill="#111827" class="color000000 svgShape"></path>
+  <path d="M58 53.25H22a2 2 0 0 1-2-2v-21a2 2 0 0 1 2-2h17.64a2 2 0 0 1 0 4H24v17h32v-17h-4.64a2 2 0 0 1 0-4H58a2 2 0 0 1 2 2v21a2 2 0 0 1-2 2Z" fill="#111827" class="color000000 svgShape"></path>
+</svg>
