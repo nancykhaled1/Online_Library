@@ -28,6 +28,14 @@ class HomeScreenCubit extends Cubit<States> {
         },
       );
 
+      List<Parents> parents = [];
+      catEither.fold(
+            (l) => emit(ErrorState(errorMessage: l.error?.message)),
+            (response) {
+              parents = response.data?.parents ?? [];
+        },
+      );
+
       // 2) Call books only if categories loaded successfully
       final booksEither = await repository.getAllBooks();
 
@@ -44,7 +52,7 @@ class HomeScreenCubit extends Cubit<States> {
       emit(HomeDataSuccessState(
          categories,
          books,
-
+        parents
       ));
 
     } catch (e) {

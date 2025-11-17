@@ -89,9 +89,10 @@ class GoogleSuccessState extends States {
 
 class HomeDataSuccessState extends States {
   final List<Categories> categories;
+  final List<Parents> parents;
   final List<Books> books;
 
-  HomeDataSuccessState(this.categories, this.books);
+  HomeDataSuccessState(this.categories, this.books, this.parents);
 }
 
 
