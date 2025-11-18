@@ -41,10 +41,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
   @override
   void initState() {
     super.initState();
-    // _tabController = TabController(length: 3, vsync: this);
-    // _tabController.addListener(() {
-    //   setState(() {});
-    // });
     context.read<HomeScreenCubit>().loadHomeData();
   }
 

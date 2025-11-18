@@ -12,6 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
+import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
+import 'package:online_library_app/Repositories/SaveBookRepository.dart';
+import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 
 import 'Cubit/Auth/Login/LoginScreenViewModel.dart';
 import 'Cubit/Auth/Login/SendCodeViewModel.dart';
@@ -78,6 +81,10 @@ Future<void> main() async {
   //Categories
   final allCategoriesDataSource = AllCategoriesRemoteDataSource(apiManager);
   final allCategories = AllCategoriesRepository(allCategoriesDataSource);
+
+  //Categories
+  final saveBookDataSource = SaveBookRemoteDataSource(apiManager);
+  final saveBook = SaveBookRepository(saveBookDataSource);
   runApp(
 
     MultiRepositoryProvider(
@@ -115,6 +122,10 @@ Future<void> main() async {
 
         RepositoryProvider<AllCategoriesRepository>(
           create: (context) => allCategories,
+        ),
+
+        RepositoryProvider<SaveBookRepository>(
+          create: (context) => saveBook,
         ),
 
 
@@ -183,6 +194,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => ReviewCubit(
               context.read<AllCategoriesRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => SaveListCubit(
+              context.read<SaveBookRepository>(),
             ),
           ),
 

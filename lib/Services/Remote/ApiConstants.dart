@@ -26,13 +26,15 @@ class ApiConstants{
 
   static const String reviewApi = "/api/user/book-reviews";
 
+  static const String saveBookApi = "/api/user/favorite-books";
+
+  static const String getSaveBookApi = "/api/user/favorite-books";
 
 
 
 
-  static const String sendMessageApi = "/api/user/chat/messages/send";
 
-  static const String completeProfileApi = "/api/user/auth/local/complete-student";
+
 
   static const String examsApi = "/api/user/exam/exams";
 

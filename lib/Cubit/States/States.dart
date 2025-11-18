@@ -4,13 +4,16 @@ import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
 import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
+import 'package:online_library_app/Models/Responses/SaveBookResponse.dart';
 
 import '../../Models/Responses/AllCategoriesResponse.dart';
+import '../../Models/Responses/AllSavedBooksResponse.dart';
 import '../../Models/Responses/BookByIdResponse.dart';
 import '../../Models/Responses/ChangePaswwordResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
+import '../../Models/Responses/RemoveSavedBook.dart';
 import '../../Models/Responses/ResetPasswordResponse.dart';
 import '../../Models/Responses/SendEmailResponse.dart';
 import '../../Models/Responses/VerifyEmailResponse.dart';
@@ -120,3 +123,26 @@ class GetReviewSuccessState extends States {
 
   GetReviewSuccessState({required this.review});
 }
+
+
+class SaveBookSuccessState extends States {
+  final SaveBookResponse response;
+
+  SaveBookSuccessState({required this.response});
+}
+
+
+class AllSaveBookSuccessState extends States {
+  final List<Favorites> favorite;
+
+  AllSaveBookSuccessState({required this.favorite});
+}
+
+
+class RemoveSavedBookSuccessState extends States {
+  final RemoveData removeData;
+
+  RemoveSavedBookSuccessState({required this.removeData});
+}
+
+

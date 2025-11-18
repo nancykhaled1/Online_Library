@@ -9,9 +9,10 @@ import '../../Cubit/Home/ReviewViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Models/Requests/ReviewRequest.dart';
 import '../../Utils/MyColors.dart';
+import '../../Utils/dialog.dart';
 
 void showAllReviewsSheet(BuildContext context, String bookId) {
-  context.read<ReviewCubit>().getBookReview(bookId); // ⬅️ هنا
+  //context.read<ReviewCubit>().getBookReview(bookId); // ⬅️ هنا
   bool isWritingReview = false; // لو true → يعرض الفورم بدل الليست
   int selectedRating = 0;
   TextEditingController reviewController = TextEditingController();
@@ -57,6 +58,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                     BlocBuilder<ReviewCubit, States>(
                       builder: (context, state) {
                         int reviewsCount = 0;
+
                         if (state is GetReviewSuccessState) {
                           reviewsCount = state.review.length;
                         }
@@ -183,6 +185,11 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                     builder: (context, state) {
                       if (state is LoadingState) {
                         return Center(child: CircularProgressIndicator());
+                      }
+
+                      else if (state is ErrorState){
+                        showOverlayMessage(context, state.errorMessage!, isError: true);
+
                       }
 
                       if (state is GetReviewSuccessState) {
@@ -318,7 +325,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                                     'assets/images/star.svg',
                                                   ),
                                                   Text(
-                                                    " ${review.rating}/5",
+                                                    "${review.rating}/5",
                                                     style: TextStyle(
                                                       fontSize: 12.sp,
                                                       fontWeight: FontWeight

@@ -8,6 +8,7 @@ import '../../../Cubit/Auth/Register/GoogleViewModel.dart';
 import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
 import '../../../Utils/TextField.dart';
+import '../../../Utils/dialog.dart';
 import '../../Home/home.dart';
 import '../Register/RegisterScreen.dart';
 import 'SendEmailScreen.dart';
@@ -32,11 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<LoginScreenCubit,States>(
       listener: (context, state) async {
         if (state is ErrorState) {
-         // showOverlayMessage(context, state.errorMessage!, isError: true);
+          showOverlayMessage(context, state.errorMessage!, isError: true);
 
         }
         else if (state is LoginSuccessState) {
-       //   showOverlayMessage(context, state.response.data!.message!, isError: false);
+          showOverlayMessage(context, state.response.data!.message!, isError: false);
 
             Navigator.pushReplacement(
               context,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/Cubit/States/States.dart';
 
+import '../../Cubit/MyShelf/SaveListViewModel.dart';
 import '../../Utils/MyColors.dart';
 import '../Library/BookDetails.dart';
 import 'OnBorrowScreen.dart';
@@ -22,6 +25,11 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
 
   final List<String> tabs = ["Saved list", "On borrow", "Returned"];
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<SaveListCubit>().getSaveBooks();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,81 +123,107 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
 
   // محتوى كل تاب 👇
   Widget _buildSavedList() {
-    return GestureDetector(
-      onTap: (){
-        // Navigator.of(context).pushReplacement(
-        //   PageRouteBuilder(
-        //     pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(),
-        //     transitionDuration: Duration.zero,
-        //     reverseTransitionDuration: Duration.zero,
-        //   ),
-        // );
-      },
-      child: ListView.separated(
-        separatorBuilder: (_, __) => SizedBox(height: 10.h),
-        // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-        itemCount: 20,
-        itemBuilder: (context, index) {
-          return Container(
-            //padding: EdgeInsets.all(20.r),
-            width: double.infinity,
-            // height: 70.h,
-            decoration: BoxDecoration(
-              color: MyColors.whiteColor,
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                  color: MyColors.outColor
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(8.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height:150,
+    return BlocBuilder<SaveListCubit, States>(
+        builder: (context,state){
+          if (state is LoadingState) {
+            return Center(child: CircularProgressIndicator());
+          }
+          else if (state is AllSaveBookSuccessState) {
+            final saved = state.favorite;
+            if (saved.isEmpty) {
+              return Center(
+                child: Text(
+                  "No saved list",
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    color: MyColors.blackColor,
+                  ),
+                ),
+              );
+            }
+            return ListView.separated(
+              separatorBuilder: (_, __) => SizedBox(height: 10.h),
+              // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+              itemCount: saved.length,
+              itemBuilder: (context, index) {
+                final save = saved[index];
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).pushReplacement(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(bookId: save.bookId?.id ??'' ),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    //padding: EdgeInsets.all(20.r),
                     width: double.infinity,
+                    // height: 70.h,
                     decoration: BoxDecoration(
-                      color: MyColors.dividerColor,
+                      color: MyColors.whiteColor,
                       borderRadius: BorderRadius.circular(12.r),
-
+                      border: Border.all(
+                          color: MyColors.outColor
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(8.r),
-                      child: Image.asset('assets/images/book.png',
-                        height: 200.h,
-                        //fit: BoxFit.,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height:150,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: MyColors.dividerColor,
+                              borderRadius: BorderRadius.circular(12.r),
+
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(8.r),
+                              child: Image.network(save.bookId?.mainImage ??'no image',
+                                height: 200.h,
+                                //fit: BoxFit.,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            save.bookId?.name ?? 'no name',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w800,
+                                color: MyColors.blackColor
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Text(
+                            save.bookId?.writer ?? 'no writer',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: MyColors.greyColor
+                            ),
+                          ),
+
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    "Fisika Kelas XI",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w800,
-                        color: MyColors.blackColor
-                    ),
-                  ),
-                  SizedBox(height: 5.h),
-                  Text(
-                    "Erlangga",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: MyColors.greyColor
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-          );
+                );
 
 
-        },
-      ),
+              },
+            );
+          }
+          return Container();
+        }
     );
+
+
+
   }
 
   Widget _buildOnBorrowList() {

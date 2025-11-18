@@ -22,10 +22,21 @@ class ReviewCubit extends Cubit<States> {
 
     try {
       final either = await repository.writeReview(request);
-      either.fold(
-            (l) => emit(ErrorState(errorMessage: l.error?.message)),
-            (success) {
+
+      await either.fold(
+            (l) async {
+          // ❌ Error حصل -> اعرضه
+          emit(ErrorState(errorMessage: l.error?.message));
+
+          // ✔ اعملي Refresh للريفيوهات برضو
+          await getBookReview(request.bookId!, showLoading: false);
+        },
+            (success) async {
+          // ✔ الريفيو اتسجل
           emit(ReviewSuccessState(response: success));
+
+          // ✔ رجعي الريفيوهات بعد الريفيو الجديد
+          await getBookReview(request.bookId!, showLoading: false);
         },
       );
     } catch (e) {
@@ -33,21 +44,22 @@ class ReviewCubit extends Cubit<States> {
     }
   }
 
-  Future<void> getBookReview(String bookId) async {
-    emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
+  Future<void> getBookReview(String bookId, {bool showLoading = true}) async {
+    if (showLoading) {
+      emit(LoadingState(loadingMessage: 'جارى التحميل'));
+    }
 
     var either = await repository.getBookReview(bookId);
-    either.fold(
-            (l) {
-          emit(ErrorState(errorMessage: l.error?.message));
-        },
-            (success) {
-          review = success.data?.reviews ??[];
-          emit(GetReviewSuccessState(review: review));
-        }
 
+    either.fold(
+          (l) => emit(ErrorState(errorMessage: l.error?.message)),
+          (success) {
+        review = success.data?.reviews ?? [];
+        emit(GetReviewSuccessState(review: review));
+      },
     );
   }
+
 
 
 
