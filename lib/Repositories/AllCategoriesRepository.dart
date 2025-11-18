@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
 import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
+import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
 
 import '../Models/Requests/ReviewRequest.dart';
 import '../Models/Responses/AllCategoriesResponse.dart';
@@ -30,6 +31,10 @@ class AllCategoriesRepository {
 
   Future<Either<LoginError, BooksByCategoryIdResponse>> getBookByCategoryId(String categoryId) {
     return remoteDataSource.getBookByCategoryId(categoryId);
+  }
+
+  Future<Either<LoginError, CategoryByIdResponse>> getCategoryById(String parentId) {
+    return remoteDataSource.getCategoryById(parentId);
   }
 
   Future<Either<LoginError, ReviewResponse>> writeReview(

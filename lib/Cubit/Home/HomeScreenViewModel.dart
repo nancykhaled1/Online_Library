@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
+import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
 
 import '../../Models/Requests/ReviewRequest.dart';
 import '../../Models/Responses/AllCategoriesResponse.dart';
@@ -13,6 +14,9 @@ class HomeScreenCubit extends Cubit<States> {
 
   HomeScreenCubit(this.repository) : super(InitialState());
   List<Reviews> review = [];
+
+  List<Children> children = [];
+
 
 
 
@@ -67,20 +71,7 @@ class HomeScreenCubit extends Cubit<States> {
 
 
 
-  Future<void> getBookByCategoryId(String categoryId) async {
-    emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
 
-    var either = await repository.getBookByCategoryId(categoryId);
-    either.fold(
-            (l) {
-          emit(ErrorState(errorMessage: l.error?.message));
-        },
-            (success) {
-          emit(BookByCategoryIdSuccessState(book: success.data!));
-        }
-
-    );
-  }
 
 
   Future<void> getBookDetails(String bookId) async {

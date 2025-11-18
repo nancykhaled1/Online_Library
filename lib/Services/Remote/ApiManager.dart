@@ -13,6 +13,7 @@ import 'package:online_library_app/Models/Responses/AllSavedBooksResponse.dart';
 import 'package:online_library_app/Models/Responses/BookByIdResponse.dart';
 import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
+import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
 import 'package:online_library_app/Models/Responses/RemoveSavedBook.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
 
@@ -1017,6 +1018,60 @@ class ApiManager{
     }
   }
 
+  Future<Either<LoginError, CategoryByIdResponse>> getCategoryByID(String parentId) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      Uri url = Uri.https(ApiConstants.baseurl, "/api/user/categories/$parentId");
+
+      final savedToken = await TokenStorage.getToken();
+
+      if (savedToken == null) {
+        print("⚠️ No auth token saved, user might not be logged in.");
+        return left(
+          LoginError(
+            success: false,
+            error: LoginDetailsError(
+              code: 401,
+              message: "Unauthorized: No token found, please login again.",
+            ),
+          ),
+        );
+      }
+
+      var response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $savedToken",
+        },
+      );
+
+      print('Mark as read status: ${response.statusCode}');
+      print('Mark as read body: ${response.body}');
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        var categoryByIdResponse = CategoryByIdResponse.fromJson(jsonResponse);
+        return right(categoryByIdResponse);
+      } else {
+        return left(LoginError.fromJson(jsonResponse));
+      }
+    } else {
+      return left(
+        LoginError(
+          success: false,
+          error: LoginDetailsError(
+            code: 0,
+            message: "No Internet Connection",
+          ),
+        ),
+      );
+    }
+  }
 
 
 

@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/Cubit/Home/BookViewModel.dart';
 import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
@@ -200,6 +201,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => SaveListCubit(
               context.read<SaveBookRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => BookCubit(
+              context.read<AllCategoriesRepository>(),
             ),
           ),
 

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:online_library_app/View/Home/CategoryDetails.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../Cubit/Home/BookViewModel.dart';
 import '../../Cubit/Home/CategoryViewModel.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
@@ -23,6 +24,7 @@ class LibraryHomeScreen extends StatefulWidget {
 class _LibraryHomeScreenState extends State<LibraryHomeScreen>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  String? currentSelectedCategoryId;
 
   final PageController pageController = PageController();
 
@@ -41,82 +43,73 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
   @override
   void initState() {
     super.initState();
+
+    /// 🚀 أول استدعاء للـ Home Data
     context.read<HomeScreenCubit>().loadHomeData();
+  }
+
+  void _setupTabListener() {
+    _tabController?.addListener(() {
+      if (_tabController!.indexIsChanging) return;
+
+      final homeState = context.read<HomeScreenCubit>().state;
+
+      if (homeState is HomeDataSuccessState) {
+        final selectedParent = homeState.parents[_tabController!.index];
+        final parentId = selectedParent.id!;
+
+        context.read<CategoryCubit>().getCategoryById(parentId);
+
+        setState(() {
+          currentSelectedCategoryId = null; // Reset عند تغيير Parent
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-          child: BlocListener<HomeScreenCubit, States>(
-            listener: (context, state) {
-              if (state is HomeDataSuccessState) {
-                _tabController ??= TabController(
-                  length: state.parents.length,
-                  vsync: this,
-                );
+        child: BlocListener<HomeScreenCubit, States>(
+          listener: (context, state) {
+            if (state is HomeDataSuccessState) {
+              _tabController ??= TabController(
+                length: state.parents.length,
+                vsync: this,
+              );
 
+              _setupTabListener();
 
+              /// 🚀 أول Parent
+              final firstParentId = state.parents[0].id!;
+              context.read<CategoryCubit>().getCategoryById(firstParentId);
+            }
+          },
+          child: BlocBuilder<HomeScreenCubit, States>(
+            builder: (context, state) {
+              if (state is LoadingState) {
+                return Center(child: CircularProgressIndicator());
               }
-            },
-            child: BlocBuilder<HomeScreenCubit, States>(
-              builder: (context, state) {
-                if (state is LoadingState) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                else if (state is HomeDataSuccessState) {
-                   final parents = state.parents;
-                  //
-                  // // لو أول مرة أبني الـ TabController
-                  // _tabController = TabController(
-                  //   length: parents.length,
-                  //   vsync: this,
-                  // );
 
-                  if (_tabController == null) {
-                    return SizedBox(); // أو شوية loading صغير
-                  }
-                  String currentTab = parents[_tabController!.index].name ?? '';
-                  final categories = state.categories;
+              if (state is HomeDataSuccessState) {
+                final parents = state.parents;
 
+                if (_tabController == null) return SizedBox();
 
-            
-                  final books =
-                      state.books
-                          .where(
-                            (book) =>
-                                (book.condition ?? '').toLowerCase() == 'new',
-                          )
-                          .toList();
+                String currentTab = parents[_tabController!.index].name ?? '';
 
-                   final firstCategoryId = state.categories[0].id!;
-
-                   // 🚀 هات كتب أول كاتيجوري
-                   context.read<CategoryCubit>().getBookByCategoryId(firstCategoryId);
-            
-                  if (books.isEmpty) {
-                    return Center(child: Text("No new books available."));
-                  }
-                  return Column(
+                return SingleChildScrollView(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 🔹 Header row (اسم التطبيق + التابات + نوتيفيكيشن)
+                      /// ---------- HEADER + TABS ----------
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // const Text(
-                          //   "Baca",
-                          //   style: TextStyle(
-                          //     fontSize: 22,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: Colors.black,
-                          //   ),
-                          // ),
-                          // Tabs هنا
                           Expanded(
                             child: TabBar(
                               controller: _tabController,
@@ -129,18 +122,9 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                               ),
-                              unselectedLabelStyle: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.normal,
-                              ),
-                              // padding: EdgeInsets.only(left: 20.w),
-                              labelPadding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                              ),
                               tabs: parents
                                   .map((p) => Tab(text: p.name ?? ''))
                                   .toList(),
-            
                             ),
                           ),
                           SvgPicture.asset(
@@ -150,15 +134,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           ),
                         ],
                       ),
-            
+
                       SizedBox(height: 16.h),
-            
-                      // 🔹 Search bar
+
+                      /// ---------- SEARCH ----------
                       TextField(
                         decoration: InputDecoration(
-                          hintText: "Tab to search...",
+                          hintText: "Tap to search...",
                           hintStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
                             fontSize: 14.sp,
                             color: MyColors.greyColor,
                           ),
@@ -166,38 +149,20 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                             padding: EdgeInsets.all(12.sp),
                             child: SvgPicture.asset(
                               'assets/images/Icon Left.svg',
-                              height: 15.h,
-                              width: 15.w,
                             ),
                           ),
                           filled: true,
                           fillColor: MyColors.softGreyColor,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 10.h,
-                            horizontal: 16.w,
-                          ),
-                          enabledBorder: OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50.r),
-                            borderSide: BorderSide(
-                              color: MyColors.outColor,
-                              width: 1.5,
-                            ),
-                          ),
-            
-                          // ✅ ده البوردر لما تضغطي على الفيلد
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50.r),
-                            borderSide: BorderSide(
-                              color: MyColors.primaryColor,
-                              width: 2,
-                            ),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
-            
+
                       SizedBox(height: 25.h),
-            
-                      /// ---------- Book Image Slider ----------
+
+                      /// ---------- SLIDER ----------
                       SizedBox(
                         height: 150.h,
                         child: PageView.builder(
@@ -205,7 +170,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           itemCount: images.length,
                           itemBuilder: (context, index) {
                             return Container(
-                              padding: EdgeInsets.symmetric(vertical: 10.h),
+                              padding: EdgeInsets.all(8.r),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12.r),
                                 color: MyColors.dividerColor,
@@ -219,7 +184,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                       style: TextStyle(
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.bold,
-                                        color: MyColors.blackColor,
                                       ),
                                     ),
                                   ),
@@ -232,6 +196,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           },
                         ),
                       ),
+
                       SizedBox(height: 10.h),
                       Center(
                         child: SmoothPageIndicator(
@@ -245,9 +210,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           ),
                         ),
                       ),
-                      SizedBox(height: 16.h),
-            
-                      // 🔹 Categories
+
+                      SizedBox(height: 25.h),
+
+                      /// ---------- CATEGORIES ----------
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -256,7 +222,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
-                              color: MyColors.blackColor,
                             ),
                           ),
                           Text(
@@ -269,175 +234,193 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           ),
                         ],
                       ),
+
                       SizedBox(height: 12),
-                      SizedBox(
-                        height: 80.h,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: categories.length,
-                          separatorBuilder: (_, __) => SizedBox(width: 10.w),
-                          itemBuilder: (context, index) {
-                            var cat = categories[index];
-                            return GestureDetector(
-                              onTap: () {
-                                // Navigator.of(context).pushReplacement(
-                                //   PageRouteBuilder(
-                                //     pageBuilder:
-                                //         (
-                                //           context,
-                                //           animation,
-                                //           secondaryAnimation,
-                                //         ) => CategoryDetailsScreen(
-                                //           categoryId: cat.id!,
-                                //         ),
-                                //     transitionDuration: Duration.zero,
-                                //     reverseTransitionDuration: Duration.zero,
-                                //   ),
-                                // );
-            
-                                final selectedCategoryId = cat.id!;
-                                // استدعاء الداتا حسب الكاتيجوري
-                                //selectedCategoryId = cat.id!;
-                                context.read<CategoryCubit>().getBookByCategoryId(selectedCategoryId);
-                                setState(() {}); // عشان يظهر highlight للكاتيجوري المحدد مثلاً
-                            },
-                              child: Container(
-                                width: 110.w,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 14.h,
-                                  vertical: 14.w,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14.r),
-                                  border: Border.all(color: MyColors.outColor),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    cat.name ?? '',
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14.sp,
-                                      color: MyColors.blackColor,
+
+                      BlocConsumer<CategoryCubit, States>(
+                        listener: (context, state) {
+                          if (state is CategoryByIdSuccessState) {
+                            final children = state.children;
+
+                            if (children.isNotEmpty &&
+                                currentSelectedCategoryId == null) {
+                              currentSelectedCategoryId = children[0].id!;
+                              context
+                                  .read<BookCubit>()
+                                  .getBookByCategoryId(children[0].id!);
+                            }
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is BookLoadingState) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          if (state is CategoryByIdSuccessState) {
+                            final category = state.children;
+
+                            if(category.isEmpty){
+
+                              return Center(
+                                child: Text('no books in this category',
+                                  style: TextStyle(color: MyColors.primaryColor,
+                                    fontSize: 16.sp,
+                                  ),),
+                              );
+                            }
+
+                            return SizedBox(
+                              height: 80.h,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: category.length,
+                                separatorBuilder: (_, __) =>
+                                    SizedBox(width: 10.w),
+                                itemBuilder: (context, index) {
+                                  final cat = category[index];
+                                  final isSelected =
+                                      currentSelectedCategoryId == cat.id;
+
+
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        currentSelectedCategoryId = cat.id!;
+                                      });
+
+                                      context
+                                          .read<BookCubit>()
+                                          .getBookByCategoryId(cat.id!);
+                                    },
+                                    child: Container(
+                                      width: 110.w,
+                                      padding: EdgeInsets.all(14.r),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.circular(14.r),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? MyColors.primaryColor
+                                              : MyColors.outColor,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          cat.name ?? '',
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
                             );
-                          },
-                        ),
+                          }
+
+                          return SizedBox();
+                        },
                       ),
-            
+
                       SizedBox(height: 25.h),
-            
-                      // 🔹 Book list
+
+                      /// ---------- BOOK LIST ----------
                       Text(
                         "$currentTab just for you!",
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                          color: MyColors.blackColor,
                         ),
                       ),
                       SizedBox(height: 12.h),
-                      BlocBuilder<CategoryCubit, States>(
+
+                      BlocBuilder<BookCubit, States>(
                         builder: (context, state) {
                           if (state is BookLoadingState) {
                             return Center(child: CircularProgressIndicator());
                           }
-                          else if (state is BookByCategoryIdSuccessState) {
+
+
+                          if (state is BookByCategoryIdSuccessState) {
                             final books = state.book;
-            
-                            // final books =
-                            // state.book
-                            //     .where(
-                            //       (book) =>
-                            //   (book.condition ?? '').toLowerCase() == 'new',
-                            // )
-                            //     .toList();
-                            //
-                            // if (books.isEmpty) {
-                            //   return Center(child: Text("No new books available."));
-                            // }
+                            if(books.isEmpty){
+
+                              return Center(
+                                child: Text('no books in this category',
+                                  style: TextStyle(color: MyColors.primaryColor,
+                                  fontSize: 16.sp,
+                                  ),),
+                              );
+                            }
+
                             return SizedBox(
                               height: 250.h,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
-                                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                                itemCount: books.books!.length,
+                                itemCount: books.length,
+                                separatorBuilder: (_, __) =>
+                                    SizedBox(width: 12),
                                 itemBuilder: (context, index) {
-                                  var book = books.books?[index];
+                                  final book = books[index];
+
                                   return GestureDetector(
                                     onTap: () {
-                                      Navigator.of(context).pushReplacement(
-                                        PageRouteBuilder(
-                                          pageBuilder:
-                                              (
-                                              context,
-                                              animation,
-                                              secondaryAnimation,
-                                              ) => BookDetailsScreen(bookId: book!.id!),
-                                          transitionDuration: Duration.zero,
-                                          reverseTransitionDuration: Duration.zero,
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => BookDetailsScreen(
+                                            bookId: book.id!,
+                                          ),
                                         ),
                                       );
                                     },
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           width: 160.w,
                                           height: 180.h,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(12.r),
+                                            borderRadius:
+                                            BorderRadius.circular(12.r),
                                             border: Border.all(
-                                              color: MyColors.outColor,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(0.1),
-                                                blurRadius: 6,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
+                                                color: MyColors.outColor),
                                           ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(5.r),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.vertical(
-                                                top: Radius.circular(12.r),
-                                              ),
-                                              child: Image.network(
-                                                book?.mainImage ?? '',
-                                                fit: BoxFit.fill,
-                                              ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(12.r),
+                                            child: Image.network(
+                                              book.mainImage ?? '',
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.all(8),
+                                          padding: EdgeInsets.all(8.r),
                                           child: Column(
                                             crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                book?.name ?? '',
+                                                book.name ?? '',
                                                 maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
+                                                overflow:
+                                                TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                  fontSize: 14.sp,
                                                   fontWeight: FontWeight.w700,
-                                                  color: MyColors.blackColor,
+                                                  fontSize: 14.sp,
                                                 ),
                                               ),
-                                              const SizedBox(height: 4),
+                                              SizedBox(height: 4),
                                               Text(
-                                                book?.publisher ?? '',
+                                                book.publisher ?? '',
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
-                                                  fontWeight: FontWeight.w500,
                                                   color: MyColors.greyColor,
                                                 ),
                                               ),
@@ -451,23 +434,17 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                               ),
                             );
                           }
-                          // else if (state is ErrorState) {
-                          //   return Center(child: Text(state.errorMessage ?? 'Error'));
-                          // } else {
-                            return Container();
-                          }
-            
+
+                          return SizedBox();
+                        },
                       ),
-            
                     ],
-                  );
-                } else if (state is ErrorState) {
-                  return Center(child: Text(state.errorMessage ?? 'Error'));
-                } else {
-                  return Container();
-                }
-              },
-            ),
+                  ),
+                );
+              }
+
+              return SizedBox();
+            },
           ),
         ),
       ),

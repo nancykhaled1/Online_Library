@@ -2,43 +2,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
 
 import '../../Models/Responses/AllCategoriesResponse.dart';
+import '../../Models/Responses/BooksByCategoryIdResponse.dart';
 import '../../Models/Responses/CategoryByIdResponse.dart';
 import '../../Repositories/AllCategoriesRepository.dart';
 import '../States/States.dart';
 
 
-class CategoryCubit extends Cubit<States> {
+class BookCubit extends Cubit<States> {
   final AllCategoriesRepository repository;
 
-  CategoryCubit(this.repository) : super(InitialState());
+  BookCubit(this.repository) : super(InitialState());
+
+  List<BooksByCategoryId> booksByCategory = [];
+
+  Map<String, List<BooksByCategoryId>> cachedBooks = {}; // categoryId → books list
 
 
-  List<Children> children = [];
+  Future<void> getBookByCategoryId(String categoryId) async {
 
-  Map<String, List<Children>> cachedCategories = {}; // parentId → list
-
-
-  Future<void> getCategoryById(String parentId) async {
-
-    // لو موجودة بالفعل = استخدم الكاش
-    if (cachedCategories.containsKey(parentId)) {
-      emit(CategoryByIdSuccessState(children: cachedCategories[parentId]!));
-      return;
-    }
     emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
 
-    var either = await repository.getCategoryById(parentId);
+    var either = await repository.getBookByCategoryId(categoryId);
     either.fold(
             (l) {
           emit(ErrorState(errorMessage: l.error?.message));
         },
             (success) {
-          children = success.data?.children ??[];
-          emit(CategoryByIdSuccessState(children: children));
+              booksByCategory = success.data?.books??[];
+          emit(BookByCategoryIdSuccessState(book: booksByCategory));
         }
 
     );
   }
+
 
 
 }
