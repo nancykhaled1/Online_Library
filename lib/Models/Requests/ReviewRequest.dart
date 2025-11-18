@@ -10,7 +10,7 @@ class ReviewRequest {
 
   ReviewRequest.fromJson(dynamic json) {
     bookId = json['bookId'];
-    comment = json['Comment'];
+    comment = json['comment'];
     rating = json['rating'];
   }
   String? bookId;
@@ -20,7 +20,7 @@ class ReviewRequest {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['bookId'] = bookId;
-    map['Comment'] = comment;
+    map['comment'] = comment;
     map['rating'] = rating;
     return map;
   }

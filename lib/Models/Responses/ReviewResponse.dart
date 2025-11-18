@@ -63,7 +63,8 @@ class Review {
       this.bookId, 
       this.userId, 
       this.rating, 
-      this.id, 
+      this.id,
+    this.comment,
       this.createdAt, 
       this.updatedAt, 
       this.v,});
@@ -72,6 +73,7 @@ class Review {
     bookId = json['bookId'];
     userId = json['userId'];
     rating = json['rating'];
+    comment = json['comment'];
     id = json['_id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -80,6 +82,7 @@ class Review {
   String? bookId;
   String? userId;
   int? rating;
+  String? comment;
   String? id;
   String? createdAt;
   String? updatedAt;
@@ -90,6 +93,7 @@ class Review {
     map['bookId'] = bookId;
     map['userId'] = userId;
     map['rating'] = rating;
+    map['comment'] = comment;
     map['_id'] = id;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;

@@ -75,7 +75,8 @@ class Reviews {
       this.id, 
       this.bookId, 
       this.userId, 
-      this.rating, 
+      this.rating,
+      this.comment,
       this.createdAt, 
       this.updatedAt, 
       this.v,});
@@ -85,6 +86,7 @@ class Reviews {
     bookId = json['bookId'];
     userId = json['userId'] != null ? UserId.fromJson(json['userId']) : null;
     rating = json['rating'];
+    comment = json['comment'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     v = json['__v'];
@@ -93,6 +95,7 @@ class Reviews {
   String? bookId;
   UserId? userId;
   int? rating;
+  String? comment;
   String? createdAt;
   String? updatedAt;
   int? v;
@@ -105,6 +108,7 @@ class Reviews {
       map['userId'] = userId?.toJson();
     }
     map['rating'] = rating;
+    map['comment'] = comment;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;

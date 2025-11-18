@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
+import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
 
 import 'Cubit/Auth/Login/LoginScreenViewModel.dart';
 import 'Cubit/Auth/Login/SendCodeViewModel.dart';
@@ -175,6 +176,12 @@ Future<void> main() async {
 
           BlocProvider(
             create: (context) => CategoryCubit(
+              context.read<AllCategoriesRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => ReviewCubit(
               context.read<AllCategoriesRepository>(),
             ),
           ),

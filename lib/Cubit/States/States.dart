@@ -1,6 +1,7 @@
 
 
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
+import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
 
@@ -97,7 +98,7 @@ class HomeDataSuccessState extends States {
 
 
 class BookDetailsSuccessState extends States {
-  final Book book;
+  final BookById book;
 
   BookDetailsSuccessState({required this.book});
 }
@@ -112,4 +113,10 @@ class ReviewSuccessState extends States {
   final ReviewResponse response;
 
   ReviewSuccessState({required this.response});
+}
+
+class GetReviewSuccessState extends States {
+  final List<Reviews> review;
+
+  GetReviewSuccessState({required this.review});
 }

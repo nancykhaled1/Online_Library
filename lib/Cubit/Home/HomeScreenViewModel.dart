@@ -3,6 +3,7 @@ import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
 
 import '../../Models/Requests/ReviewRequest.dart';
 import '../../Models/Responses/AllCategoriesResponse.dart';
+import '../../Models/Responses/BookReviewResponse.dart';
 import '../../Repositories/AllCategoriesRepository.dart';
 import '../States/States.dart';
 
@@ -11,6 +12,8 @@ class HomeScreenCubit extends Cubit<States> {
   final AllCategoriesRepository repository;
 
   HomeScreenCubit(this.repository) : super(InitialState());
+  List<Reviews> review = [];
+
 
 
   Future<void> loadHomeData() async {
@@ -95,21 +98,24 @@ class HomeScreenCubit extends Cubit<States> {
     );
   }
 
-  Future<void> submitBookReview(ReviewRequest request) async {
-    emit(LoadingState(loadingMessage: "Submitting review..."));
 
-    try {
-      final either = await repository.writeReview(request);
-      either.fold(
-            (l) => emit(ErrorState(errorMessage: l.error?.message)),
-            (success) {
-          emit(ReviewSuccessState(response: success));
+
+  Future<void> getBookReview(String bookId) async {
+    emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
+
+    var either = await repository.getBookReview(bookId);
+    either.fold(
+            (l) {
+          emit(ErrorState(errorMessage: l.error?.message));
         },
-      );
-    } catch (e) {
-      emit(ErrorState(errorMessage: e.toString()));
-    }
+            (success) {
+              review = success.data?.reviews ??[];
+          emit(GetReviewSuccessState(review: review));
+        }
+
+    );
   }
+
 
 
 }

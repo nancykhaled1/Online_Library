@@ -34,10 +34,10 @@ class Data {
 
   Data.fromJson(dynamic json) {
     message = json['message'];
-    book = json['book'] != null ? Book.fromJson(json['book']) : null;
+    book = json['book'] != null ? BookById.fromJson(json['book']) : null;
   }
   String? message;
-  Book? book;
+  BookById? book;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -71,8 +71,8 @@ class Data {
 /// updatedAt : "2025-11-16T21:47:55.200Z"
 /// __v : 0
 
-class Book {
-  Book({
+class BookById {
+  BookById({
       this.id, 
       this.name, 
       this.categoryId, 
@@ -94,7 +94,7 @@ class Book {
       this.updatedAt, 
       this.v,});
 
-  Book.fromJson(dynamic json) {
+  BookById.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
     categoryId = json['categoryId'] != null ? CategoryId.fromJson(json['categoryId']) : null;

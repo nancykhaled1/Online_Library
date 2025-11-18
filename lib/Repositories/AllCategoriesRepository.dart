@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
+import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
 
 import '../Models/Requests/ReviewRequest.dart';
@@ -34,5 +35,9 @@ class AllCategoriesRepository {
   Future<Either<LoginError, ReviewResponse>> writeReview(
       ReviewRequest request) {
     return remoteDataSource.writeReview(request);
+  }
+
+  Future<Either<LoginError, BookReviewResponse>> getBookReview(String bookId) {
+    return remoteDataSource.getBookReview(bookId);
   }
 }
