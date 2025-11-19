@@ -263,7 +263,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
                               return Center(
                                 child: Text('no books in this category',
-                                  style: TextStyle(color: MyColors.primaryColor,
+                                  style: TextStyle(color: MyColors.greyColor,
                                     fontSize: 16.sp,
                                   ),),
                               );
@@ -352,7 +352,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
                               return Center(
                                 child: Text('no books in this category',
-                                  style: TextStyle(color: MyColors.primaryColor,
+                                  style: TextStyle(color: MyColors.greyColor,
                                   fontSize: 16.sp,
                                   ),),
                               );
@@ -394,10 +394,18 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                           child: ClipRRect(
                                             borderRadius:
                                             BorderRadius.circular(12.r),
-                                            child: Image.network(
-                                              book.mainImage ?? '',
-                                              fit: BoxFit.cover,
+                                            child:  FadeInImage(
+                                              placeholder: AssetImage("assets/images/nofound.png"),
+                                              image: NetworkImage(book.mainImage ?? ""),
+                                              imageErrorBuilder: (context, error, stackTrace) {
+                                                return Image.asset("assets/images/nofound.png");
+                                              },
                                             ),
+
+                                            // Image.network(
+                                            //   book.mainImage ?? '',
+                                            //   fit: BoxFit.cover,
+                                            // ),
                                           ),
                                         ),
                                         Padding(
@@ -408,7 +416,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                             children: [
                                               Text(
                                                 book.name ?? '',
-                                                maxLines: 2,
+                                                maxLines: 1,
                                                 overflow:
                                                 TextOverflow.ellipsis,
                                                 style: TextStyle(

@@ -40,7 +40,7 @@ void showOverlayMessage(BuildContext context, String message, {bool isError = tr
   overlay.insert(entry);
 
   // يخليه يختفي بعد 3 ثواني
-  Future.delayed(const Duration(seconds: 10), () {
+  Future.delayed(const Duration(seconds: 2), () {
     entry.remove();
   });
 }

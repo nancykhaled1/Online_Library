@@ -183,10 +183,19 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(8.r),
-                              child: Image.network(save.bookId?.mainImage ??'no image',
-                                height: 200.h,
-                                //fit: BoxFit.,
+                              child:  FadeInImage(
+                                placeholder: AssetImage("assets/images/nofound.png"),
+                                image:  NetworkImage(save.bookId?.mainImage ??'no image',
+                                 // height: 200.h,
+                                  //fit: BoxFit.,
+                                ),
+                                imageErrorBuilder: (context, error, stackTrace) {
+                                  return Image.asset("assets/images/nofound.png");
+                                },
                               ),
+
+
+
                             ),
                           ),
                           SizedBox(height: 8.h),

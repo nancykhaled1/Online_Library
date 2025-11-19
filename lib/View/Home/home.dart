@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:online_library_app/View/Search/SearchScreen.dart';
 
 import '../../Utils/MyColors.dart';
 import '../Library/LibraryScreen.dart';
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     LibraryHomeScreen(),
-    LibraryScreen(),
+    SearchScreen(),
     MyShelfScreen(),
     ProfileScreen()
   ];
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? MyColors.primaryColor
                     : MyColors.greyColor,
               ),
-              label: 'Library',
+              label: 'Search',
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset('assets/images/my-folder.svg',

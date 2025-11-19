@@ -32,6 +32,7 @@ import '../../Models/Responses/LoginResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
 import '../../Models/Responses/ResetPasswordResponse.dart';
 import '../../Models/Responses/SaveBookResponse.dart';
+import '../../Models/Responses/SearchResponse.dart';
 import '../../Models/Responses/SendEmailResponse.dart';
 import '../../Models/Responses/VerifyEmailResponse.dart';
 import '../Local/SharedPreference.dart';
@@ -981,7 +982,7 @@ class ApiManager{
         );
       }
 
-      var response = await http.get(
+      var response = await http.delete(
         url,
         headers: {
           "Content-Type": "application/json",
@@ -1073,6 +1074,69 @@ class ApiManager{
     }
   }
 
+
+  Future<Either<LoginError, SearchResponse>> searchBooks(String query) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+
+      // ⬅️ نبني الـ URL مع query parameter
+      Uri url = Uri.https(
+        ApiConstants.baseurl,
+        "/api/user/books/search/",
+        {"query": query}, // هنا الـ Query Parameters
+      );
+
+      final savedToken = await TokenStorage.getToken();
+
+      if (savedToken == null) {
+        print("⚠️ No auth token saved, user might not be logged in.");
+        return left(
+          LoginError(
+            success: false,
+            error: LoginDetailsError(
+              code: 401,
+              message: "Unauthorized: No token found, please login again.",
+            ),
+          ),
+        );
+      }
+
+      // ⬅️ إرسال request
+      var response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $savedToken",
+        },
+      );
+
+      print("📡 Search status: ${response.statusCode}");
+      print("📦 Search body: ${response.body}");
+
+      var jsonResponse = jsonDecode(response.body);
+
+      // ⬅️ في حالة نجاح
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        var searchResponse = SearchResponse.fromJson(jsonResponse);
+        return right(searchResponse);
+      } else {
+        return left(LoginError.fromJson(jsonResponse));
+      }
+    } else {
+      return left(
+        LoginError(
+          success: false,
+          error: LoginDetailsError(
+            code: 0,
+            message: "No Internet Connection",
+          ),
+        ),
+      );
+    }
+  }
 
 
 

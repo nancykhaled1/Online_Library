@@ -14,8 +14,11 @@ import 'package:online_library_app/Cubit/Home/BookViewModel.dart';
 import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
+import 'package:online_library_app/Cubit/Search/SearchScreenViewModel.dart';
 import 'package:online_library_app/Repositories/SaveBookRepository.dart';
+import 'package:online_library_app/Repositories/SearchRepository.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
+import 'package:online_library_app/Sources/SearchDataSource.dart';
 
 import 'Cubit/Auth/Login/LoginScreenViewModel.dart';
 import 'Cubit/Auth/Login/SendCodeViewModel.dart';
@@ -83,9 +86,14 @@ Future<void> main() async {
   final allCategoriesDataSource = AllCategoriesRemoteDataSource(apiManager);
   final allCategories = AllCategoriesRepository(allCategoriesDataSource);
 
-  //Categories
+  //save
   final saveBookDataSource = SaveBookRemoteDataSource(apiManager);
   final saveBook = SaveBookRepository(saveBookDataSource);
+
+  //search
+  final searchBookDataSource = SearchRemoteDataSource(apiManager);
+  final search = SearchRepository(searchBookDataSource);
+
   runApp(
 
     MultiRepositoryProvider(
@@ -127,6 +135,10 @@ Future<void> main() async {
 
         RepositoryProvider<SaveBookRepository>(
           create: (context) => saveBook,
+        ),
+
+        RepositoryProvider<SearchRepository>(
+          create: (context) => search,
         ),
 
 
@@ -207,6 +219,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => BookCubit(
               context.read<AllCategoriesRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => SearchScreenCubit(
+              context.read<SearchRepository>(),
             ),
           ),
 

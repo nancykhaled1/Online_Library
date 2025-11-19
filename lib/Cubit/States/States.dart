@@ -6,6 +6,7 @@ import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.da
 import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/SaveBookResponse.dart';
+import 'package:online_library_app/Models/Responses/SearchResponse.dart';
 
 import '../../Models/Responses/AllCategoriesResponse.dart';
 import '../../Models/Responses/AllSavedBooksResponse.dart';
@@ -150,6 +151,12 @@ class RemoveSavedBookSuccessState extends States {
   final RemoveData removeData;
 
   RemoveSavedBookSuccessState({required this.removeData});
+}
+
+class SearchBooksSuccessState extends States {
+  final List<SearchBooks> search;
+
+  SearchBooksSuccessState({required this.search});
 }
 
 
