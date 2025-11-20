@@ -10,6 +10,7 @@ import '../../Cubit/Home/CategoryViewModel.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
+import '../ImageBuild.dart';
 import '../Library/BookDetails.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: MyColors.whiteColor,
       body: SafeArea(
         child: BlocListener<HomeScreenCubit, States>(
           listener: (context, state) {
@@ -214,25 +215,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                       SizedBox(height: 25.h),
 
                       /// ---------- CATEGORIES ----------
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Explore by categories",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            "See All",
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                              color: MyColors.greyColor,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        "Explore by categories",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
 
                       SizedBox(height: 12),
@@ -331,7 +319,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
                       /// ---------- BOOK LIST ----------
                       Text(
-                        "$currentTab just for you!",
+                        "$currentTab just for this category!",
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
@@ -351,10 +339,22 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                             if(books.isEmpty){
 
                               return Center(
-                                child: Text('no books in this category',
-                                  style: TextStyle(color: MyColors.greyColor,
-                                  fontSize: 16.sp,
-                                  ),),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset('assets/images/nofound.png',height: 100,),
+                                    SizedBox(width: 5.w,),
+                                    Text(
+                                      "No books found in this category",
+                                      style: TextStyle(
+                                          color: MyColors.greyColor,
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w500
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             }
 
@@ -394,13 +394,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                           child: ClipRRect(
                                             borderRadius:
                                             BorderRadius.circular(12.r),
-                                            child:  FadeInImage(
-                                              placeholder: AssetImage("assets/images/nofound.png"),
-                                              image: NetworkImage(book.mainImage ?? ""),
-                                              imageErrorBuilder: (context, error, stackTrace) {
-                                                return Image.asset("assets/images/nofound.png");
-                                              },
-                                            ),
+                                            child:  buildImage(book.mainImage)
+
 
                                             // Image.network(
                                             //   book.mainImage ?? '',

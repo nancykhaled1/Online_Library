@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
+import '../Search/SearchScreen.dart';
 import 'BookDetails.dart';
 
 class LibraryScreen extends StatefulWidget{
@@ -37,54 +38,86 @@ class _LibraryScreenState extends State<LibraryScreen>
         } else if (state is HomeDataSuccessState) {
           final books = state.books;
           return SafeArea(child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: MyColors.whiteColor,
 
             body: Padding(
               padding:  EdgeInsets.symmetric(horizontal: 14.w,vertical: 10.h),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // const Text(
-                      //   "Baca",
-                      //   style: TextStyle(
-                      //     fontSize: 22,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: Colors.black,
-                      //   ),
-                      // ),
-                      // Tabs هنا
-                      Expanded(
-                        child: TabBar(
-                          controller: _tabController,
-                          isScrollable: true,
-                          indicatorColor: MyColors.blackColor,
-                          dividerColor: Colors.transparent,
-                          labelColor: MyColors.blackColor,
-                          unselectedLabelColor: MyColors.greyColor,
-                          labelStyle: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.w600
-                          ),
-                          unselectedLabelStyle: TextStyle(
-                              fontSize: 16.sp, fontWeight: FontWeight.normal),
-                          // padding: EdgeInsets.only(left: 20.w),
-                          labelPadding:
-                          EdgeInsets.symmetric(horizontal: 10.w),
-                          tabs: const [
-                            Tab(text: "Books"),
-                            Tab(text: "Novel"),
-                            Tab(text: "Comic"),
-                          ],
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     // const Text(
+                  //     //   "Baca",
+                  //     //   style: TextStyle(
+                  //     //     fontSize: 22,
+                  //     //     fontWeight: FontWeight.bold,
+                  //     //     color: Colors.black,
+                  //     //   ),
+                  //     // ),
+                  //     // Tabs هنا
+                  //     Expanded(
+                  //       child: TabBar(
+                  //         controller: _tabController,
+                  //         isScrollable: true,
+                  //         indicatorColor: MyColors.blackColor,
+                  //         dividerColor: Colors.transparent,
+                  //         labelColor: MyColors.blackColor,
+                  //         unselectedLabelColor: MyColors.greyColor,
+                  //         labelStyle: TextStyle(
+                  //             fontSize: 16.sp, fontWeight: FontWeight.w600
+                  //         ),
+                  //         unselectedLabelStyle: TextStyle(
+                  //             fontSize: 16.sp, fontWeight: FontWeight.normal),
+                  //         // padding: EdgeInsets.only(left: 20.w),
+                  //         labelPadding:
+                  //         EdgeInsets.symmetric(horizontal: 10.w),
+                  //         tabs: const [
+                  //           Tab(text: "Books"),
+                  //           Tab(text: "Novel"),
+                  //           Tab(text: "Comic"),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     SvgPicture.asset('assets/images/notification-bing.svg',
+                  //       height: 20.h,
+                  //       width: 25.w,
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 16.h),
+
+                  TextField(
+                    readOnly: true, // ده مهم عشان ميقدرش يكتب هنا
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SearchScreen(),
+                        ),
+                      );
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Tap to search...",
+                      hintStyle: TextStyle(
+                        fontSize: 14.sp,
+                        color: MyColors.greyColor,
+                      ),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(12.sp),
+                        child: SvgPicture.asset(
+                          'assets/images/Icon Left.svg',
                         ),
                       ),
-                      SvgPicture.asset('assets/images/notification-bing.svg',
-                        height: 20.h,
-                        width: 25.w,
+                      filled: true,
+                      fillColor: MyColors.softGreyColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.r),
+                        borderSide: BorderSide.none,
                       ),
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 16.h),
+
+                  SizedBox(height: 25.h),
 
                   Expanded(
                     child: GridView.builder(
@@ -98,6 +131,27 @@ class _LibraryScreenState extends State<LibraryScreen>
                       ),
                       itemBuilder: (context, index) {
                         var book = books[index];
+                        if(books.isEmpty){
+
+                          return Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/images/nofound.png',height: 150,),
+                                SizedBox(width: 5.w,),
+                                Text(
+                                  "No books yet!",
+                                  style: TextStyle(
+                                      color: MyColors.greyColor,
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
 
                         return GestureDetector(
                           onTap: (){

@@ -14,7 +14,9 @@ class HomeScreen extends StatefulWidget {
   static const String routeName = 'homeScreen';
 
   final int initialIndex;
-  const HomeScreen({Key? key, this.initialIndex = 0}) : super(key: key);
+  final String? categoryId;
+  final String? categoryName;
+  const HomeScreen({Key? key, this.initialIndex = 0,this.categoryId,this.categoryName}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     LibraryHomeScreen(),
-    SearchScreen(),
+    LibraryScreen(),
     MyShelfScreen(),
     ProfileScreen()
   ];
@@ -105,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? MyColors.primaryColor
                     : MyColors.greyColor,
               ),
-              label: 'Search',
+              label: 'Library',
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset('assets/images/my-folder.svg',

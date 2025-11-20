@@ -5,6 +5,7 @@ import 'package:online_library_app/Cubit/States/States.dart';
 
 import '../../Cubit/MyShelf/SaveListViewModel.dart';
 import '../../Utils/MyColors.dart';
+import '../ImageBuild.dart';
 import '../Library/BookDetails.dart';
 import 'OnBorrowScreen.dart';
 import 'ReturnedScreen.dart';
@@ -183,16 +184,7 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(8.r),
-                              child:  FadeInImage(
-                                placeholder: AssetImage("assets/images/nofound.png"),
-                                image:  NetworkImage(save.bookId?.mainImage ??'no image',
-                                 // height: 200.h,
-                                  //fit: BoxFit.,
-                                ),
-                                imageErrorBuilder: (context, error, stackTrace) {
-                                  return Image.asset("assets/images/nofound.png");
-                                },
-                              ),
+                              child:  buildImage(save.bookId?.mainImage)
 
 
 

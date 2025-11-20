@@ -6,6 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../Cubit/Search/SearchScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
+import '../Home/home.dart';
+import '../Library/BookDetails.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -33,33 +35,53 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Column(
             children: [
               /// ---------- SEARCH FIELD ----------
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: "Tap to search...",
-                  hintStyle: TextStyle(
-                    fontSize: 14.sp,
-                    color: MyColors.greyColor,
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                              HomeScreen(initialIndex: 1,),
+                          transitionDuration: Duration.zero,
+                          reverseTransitionDuration: Duration.zero,
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.arrow_back),
                   ),
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(12.sp),
-                    child: SvgPicture.asset('assets/images/Icon Left.svg'),
-                  ),
-                  filled: true,
-                  fillColor: MyColors.softGreyColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50.r),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                  onChanged: (value) {
-                    if (value.isEmpty) {
-                      context.read<SearchScreenCubit>().clearSearchResults();
-                    } else {
-                      context.read<SearchScreenCubit>().searchBooks(value);
-                    }
-                  }
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: "Tap to search...",
+                        hintStyle: TextStyle(
+                          fontSize: 14.sp,
+                          color: MyColors.greyColor,
+                        ),
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.all(12.sp),
+                          child: SvgPicture.asset('assets/images/Icon Left.svg'),
+                        ),
+                        filled: true,
+                        fillColor: MyColors.softGreyColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(50.r),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                        onChanged: (value) {
+                          if (value.isEmpty) {
+                            context.read<SearchScreenCubit>().clearSearchResults();
+                          } else {
+                            context.read<SearchScreenCubit>().searchBooks(value);
+                          }
+                        }
 
+                    ),
+                  ),
+                ],
               ),
 
               SizedBox(height: 25.h),
@@ -149,8 +171,13 @@ class _SearchScreenState extends State<SearchScreen> {
                           final book = books[index];
                           return GestureDetector(
                             onTap: () {
-                              // لو عندك صفحة تفاصيل الكتاب
-                              // Navigator.push(...);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => BookDetailsScreen(
+                                    bookId: book.id!,
+                                  ),
+                                ),
+                              );
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,6 +187,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     FadeInImage(
                                       placeholder: AssetImage("assets/images/nofound.png"),
                                       image: NetworkImage(book.mainImage ?? ""),
+                                      height: 90.h,
+                                      width: 60.w,
                                       imageErrorBuilder: (context, error, stackTrace) {
                                         return Image.asset("assets/images/nofound.png");
                                       },
@@ -199,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 'assets/images/star.svg'),
                                             SizedBox(width: 4.w),
                                             Text(
-                                              "book",
+                                              '${book.averageRating ??0}',
                                               style: TextStyle(
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w700,

@@ -68,7 +68,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                     PageRouteBuilder(
                       pageBuilder:
                           (context, animation, secondaryAnimation) =>
-                              HomeScreen(initialIndex: 0),
+                              HomeScreen(),
                       transitionDuration: Duration.zero,
                       reverseTransitionDuration: Duration.zero,
                     ),

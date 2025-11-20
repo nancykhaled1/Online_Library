@@ -35,6 +35,53 @@ class BookCubit extends Cubit<States> {
     );
   }
 
+  Future<void> loadHomeData() async {
+    emit(LoadingState(loadingMessage: "Loading..."));
+
+    try {
+      // 1) Call categories
+      final catEither = await repository.getAllCategories();
+
+      List<Categories> categories = [];
+      catEither.fold(
+            (l) => emit(ErrorState(errorMessage: l.error?.message)),
+            (response) {
+          categories = response.data?.categories ?? [];
+        },
+      );
+
+      List<Parents> parents = [];
+      catEither.fold(
+            (l) => emit(ErrorState(errorMessage: l.error?.message)),
+            (response) {
+          parents = response.data?.parents ?? [];
+        },
+      );
+
+      // 2) Call books only if categories loaded successfully
+      final booksEither = await repository.getAllBooks();
+
+      List<Books> books = [];
+      booksEither.fold(
+            (l) => emit(ErrorState(errorMessage: l.error?.message)),
+            (response) {
+          books = response.data?.books ?? [];
+        },
+      );
+
+
+      // 3) Final emit — DONE
+      emit(HomeDataSuccessState(
+          categories,
+          books,
+          parents
+      ));
+
+    } catch (e) {
+      emit(ErrorState(errorMessage: e.toString()));
+    }
+  }
+
 
 
 }
