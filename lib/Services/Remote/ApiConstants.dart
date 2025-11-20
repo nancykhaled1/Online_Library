@@ -30,13 +30,11 @@ class ApiConstants{
 
   static const String getSaveBookApi = "/api/user/favorite-books";
 
+  static const String borrowApi = "/api/user/borrows";
 
 
 
 
-
-
-  static const String examsApi = "/api/user/exam/exams";
 
   static const String attemptApi = "/api/user/exam/attempt/start";
 

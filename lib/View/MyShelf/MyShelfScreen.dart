@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/States/States.dart';
 
 import '../../Cubit/MyShelf/SaveListViewModel.dart';
@@ -30,6 +32,8 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
   void initState() {
     super.initState();
     context.read<SaveListCubit>().getSaveBooks();
+    context.read<BorrowCubit>().getBorrowBooks();
+
   }
   @override
   Widget build(BuildContext context) {
@@ -228,103 +232,143 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
   }
 
   Widget _buildOnBorrowList() {
-    return GestureDetector(
-      onTap: (){
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => OnBorrowScreen(),
-            transitionDuration: Duration.zero,
-            reverseTransitionDuration: Duration.zero,
-          ),
-        );
-      },
-      child: ListView.separated(
-        separatorBuilder: (_, __) => SizedBox(height: 10.h),
-       // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-        itemCount: 20,
-        itemBuilder: (context, index) {
-          return Container(
-            //padding: EdgeInsets.all(20.r),
-            width: double.infinity,
-            // height: 70.h,
-            decoration: BoxDecoration(
-              color: MyColors.whiteColor,
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                  color: MyColors.outColor
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(8.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height:150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: MyColors.dividerColor,
-                      borderRadius: BorderRadius.circular(12.r),
+    return BlocBuilder<BorrowCubit, States>(
+        builder: (context,state){
+          if (state is LoadingState) {
+            return Center(child: CircularProgressIndicator());
+          }
+          else if (state is GetBorrowBooksSuccessState) {
+            final borrow = state.borrow;
+            if (borrow.isEmpty) {
+              return Center(
+                child: Text(
+                  "No borrowed list",
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    color: MyColors.blackColor,
+                  ),
+                ),
+              );
+            }
+            return ListView.separated(
+              separatorBuilder: (_, __) => SizedBox(height: 10.h),
+              // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+              itemCount: borrow.length,
+              itemBuilder: (context, index) {
+                final borrowBook = borrow[index];
+                final parsedDate =
+                DateTime.parse(borrowBook.createdAt!).toLocal();
+                final formattedDate = DateFormat(
+                  'dd/MM',
+                ).format(parsedDate);
 
+                final formattedTime = DateFormat(
+                  'HH:mm',
+                ).format(parsedDate);
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).pushReplacement(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => OnBorrowScreen(borrowBook: borrowBook,),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    //padding: EdgeInsets.all(20.r),
+                    width: double.infinity,
+                    // height: 70.h,
+                    decoration: BoxDecoration(
+                      color: MyColors.whiteColor,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                          color: MyColors.outColor
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(8.r),
-                      child: Image.asset('assets/images/book.png',
-                        height: 200.h,
-                        //fit: BoxFit.,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height:150,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: MyColors.dividerColor,
+                              borderRadius: BorderRadius.circular(12.r),
+
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(8.r),
+                              child: //buildImage(borrowBook.bookId?.mainImage)
+                              Image.network(borrowBook.bookId!.mainImage ??'assets/images/book.png',
+                                height: 200.h,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset("assets/images/book.png", height: 180.h,);
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            borrowBook.bookId?.name ?? 'no name',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w800,
+                                color: MyColors.blackColor
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Text(
+                            borrowBook.bookId?.writer ??'no writer',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: MyColors.greyColor
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Row(
+                            children: [
+                              Container(
+                                width: 8.w,
+                                height: 8.w,
+                                decoration: BoxDecoration(
+                                  color: MyColors.orangeColor, // لون الدائرة
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                "On borrow (Returned in $formattedDate at $formattedTime)",
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: MyColors.darkOrangeColor
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    "Fisika Kelas XI",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w800,
-                        color: MyColors.blackColor
-                    ),
-                  ),
-                  SizedBox(height: 5.h),
-                  Text(
-                    "Erlangga",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: MyColors.greyColor
-                    ),
-                  ),
-                  SizedBox(height: 5.h),
-                  Row(
-                    children: [
-                      Container(
-                        width: 8.w,
-                        height: 8.w,
-                        decoration: BoxDecoration(
-                          color: MyColors.orangeColor, // لون الدائرة
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        "On borrow (Returned in 3 days)",
-                        style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: MyColors.darkOrangeColor
-                        ),
-                      ),
-                    ],
-                  ),
-
-                ],
-              ),
-            ),
-          );
+                );
 
 
-        },
-      ),
+              },
+            );
+          }
+          return Container();
+        }
     );
+
+
+
+
+
 
 
 

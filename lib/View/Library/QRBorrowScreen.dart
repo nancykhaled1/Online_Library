@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:online_library_app/View/ImageBuild.dart';
 
 
+import '../../Models/Responses/BorrowResponse.dart';
 import '../../Utils/MyColors.dart';
 import '../Home/home.dart';
 import '../widget.dart';
 import 'BookDetails.dart';
 
 class QRBorrowScreen extends StatelessWidget{
+  final BorrowData borrowData; // بيانات الـ borrow اللى جت من Cubit
+
+  const QRBorrowScreen({Key? key, required this.borrowData}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -25,13 +30,13 @@ class QRBorrowScreen extends StatelessWidget{
         ),
         centerTitle: true,
         leading: IconButton(onPressed: (){
-          // Navigator.of(context).pushReplacement(
-          //   PageRouteBuilder(
-          //     pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(),
-          //     transitionDuration: Duration.zero,
-          //     reverseTransitionDuration: Duration.zero,
-          //   ),
-          // );
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(bookId: borrowData.borrow?.book?.id! ??'',),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
             icon: Icon(Icons.arrow_back)),
       ),
@@ -115,7 +120,14 @@ class QRBorrowScreen extends StatelessWidget{
                         color: MyColors.primaryColor
                     )
                 ),
-                child: Image.asset('assets/images/QR Code.png'),
+                child: //buildImage(borrowData.qrCodeBorrow)
+
+                Image.network(borrowData.qrCodeBorrow!,
+                height: 200.h,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset("assets/images/book.png", height: 180.h,);
+                  },
+                ),
               ),
             ),
             SizedBox(height: 16.h),
@@ -141,9 +153,9 @@ class QRBorrowScreen extends StatelessWidget{
               ),
               child: Column(
                 children: [
-                  buildRow("Borrow date", "15 August 2025"),
-                  buildRow("Borrow time", "10:30 Am"),
-                  buildRow("Must be returned", "18 August 2025"),
+                  buildRow("Borrow date", borrowData.borrow!.borrowDate! ?? ''),
+                  buildRow("Borrow time", borrowData.borrow!.borrowTime! ?? ''),
+                  buildRow("Must be returned", borrowData.borrow!.mustReturnDate! ?? ''),
                 ],
               ),
             ),
@@ -186,7 +198,7 @@ class QRBorrowScreen extends StatelessWidget{
                       ),
                       SizedBox(height: 12.h),
                       Text(
-                        "Fisika Kelas XI",
+                        borrowData.borrow!.book!.name! ?? '',
                         style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w800,
@@ -195,7 +207,7 @@ class QRBorrowScreen extends StatelessWidget{
                       ),
                       SizedBox(height: 12.h),
                       Text(
-                        "Erlangga",
+                        borrowData.borrow!.book!.writer! ??'',
                         style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
@@ -209,50 +221,10 @@ class QRBorrowScreen extends StatelessWidget{
               ),
             ),
             SizedBox(height: 20.h),
-
           ],
         ),
       ),
     ));
   }
-
-
-  // Widget buildRow(String title, String value) {
-  //   return Padding(
-  //     padding: EdgeInsets.symmetric(
-  //         horizontal: 16.w,
-  //         vertical: 5.h
-  //     ),
-  //     child: Row(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         /// العمود الأول (العناوين)
-  //         SizedBox(
-  //           width: 120.w,
-  //           child: Text(
-  //             title,
-  //             style: TextStyle(
-  //               fontSize: 14.sp,
-  //               color: MyColors.greyColor,
-  //               fontWeight: FontWeight.w500,
-  //             ),
-  //           ),
-  //         ),
-  //
-  //         /// العمود الثاني (القيم)
-  //         Expanded(
-  //           child: Text(
-  //             value,
-  //             style: TextStyle(
-  //               fontSize: 14.sp,
-  //               fontWeight: FontWeight.w500,
-  //               color: MyColors.blackColor,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
 }

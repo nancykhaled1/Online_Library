@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
+import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Utils/MyColors.dart';
 import '../Home/home.dart';
 import '../Library/MoreDetailsScreen.dart';
@@ -8,8 +10,25 @@ import 'ReturnSheet.dart';
 
 
 class OnBorrowScreen extends StatelessWidget{
+  Borrowed borrowBook;
+  OnBorrowScreen({super.key, required this.borrowBook});
   @override
   Widget build(BuildContext context) {
+    final parsedDate =
+    DateTime.parse(borrowBook.mustReturnDate!).toLocal();
+    final formattedDate = DateFormat(
+      'dd/MM',
+    ).format(parsedDate);
+
+    final formattedTime = DateFormat(
+      'HH:mm',
+    ).format(parsedDate);
+
+    final Date =
+    DateTime.parse(borrowBook.borrowDate!).toLocal();
+    final borrowDate = DateFormat(
+      'dd/MM',
+    ).format(Date);
     return SafeArea(child: Scaffold(
       backgroundColor: MyColors.whiteColor,
       appBar: AppBar(
@@ -38,7 +57,7 @@ class OnBorrowScreen extends StatelessWidget{
             ),
             child:
                 Text(
-                  "On Borrow (Returned in 3 days)",
+                  "On Borrow (Returned in $formattedDate at $formattedTime)",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 14.sp,
@@ -54,9 +73,9 @@ class OnBorrowScreen extends StatelessWidget{
             ),
             child: Column(
               children: [
-                buildRow("Borrow date", "15 August 2025"),
-                buildRow("Borrow time", "10:30 Am"),
-                buildRow("Must be returned", "18 August 2025"),
+                buildRow("Borrow date", borrowDate??''),
+                buildRow("Borrow time", borrowBook.borrowTime ??''),
+                buildRow("Must be returned", formattedDate),
               ],
             ),
           ),
@@ -92,15 +111,17 @@ class OnBorrowScreen extends StatelessWidget{
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(8.r),
-                        child: Image.asset('assets/images/book.png',
+                        child: Image.network(borrowBook.bookId!.mainImage ??'assets/images/book.png',
                           height: 200.h,
-                          //fit: BoxFit.,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset("assets/images/book.png", height: 180.h,);
+                          },
                         ),
                       ),
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      "Fisika Kelas XI",
+                      borrowBook.bookId?.name ?? 'no name',
                       style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w800,
@@ -109,7 +130,7 @@ class OnBorrowScreen extends StatelessWidget{
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      "Erlangga",
+                      borrowBook.bookId?.writer ??'no writer',
                       style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,

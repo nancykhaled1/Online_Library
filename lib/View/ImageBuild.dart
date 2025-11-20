@@ -6,7 +6,7 @@ Widget buildImage(String? url) {
     return Image.asset(
       "assets/images/book.png",
      // fit: BoxFit.cover,
-      height: 180.h,
+      height: 200.h,
     );
   }
 

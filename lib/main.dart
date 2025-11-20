@@ -13,10 +13,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_library_app/Cubit/Home/BookViewModel.dart';
 import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
+import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
 import 'package:online_library_app/Cubit/Search/SearchScreenViewModel.dart';
+import 'package:online_library_app/Repositories/BorrowRepository.dart';
 import 'package:online_library_app/Repositories/SaveBookRepository.dart';
 import 'package:online_library_app/Repositories/SearchRepository.dart';
+import 'package:online_library_app/Sources/BorrowDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 import 'package:online_library_app/Sources/SearchDataSource.dart';
 
@@ -94,6 +97,10 @@ Future<void> main() async {
   final searchBookDataSource = SearchRemoteDataSource(apiManager);
   final search = SearchRepository(searchBookDataSource);
 
+  //borrow
+  final borrowBookDataSource = BorrowRemoteDataSource(apiManager);
+  final borrow = BorrowRepository(borrowBookDataSource);
+
   runApp(
 
     MultiRepositoryProvider(
@@ -139,6 +146,9 @@ Future<void> main() async {
 
         RepositoryProvider<SearchRepository>(
           create: (context) => search,
+        ),
+        RepositoryProvider<BorrowRepository>(
+          create: (context) => borrow,
         ),
 
 
@@ -225,6 +235,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => SearchScreenCubit(
               context.read<SearchRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => BorrowCubit(
+              context.read<BorrowRepository>(),
             ),
           ),
 

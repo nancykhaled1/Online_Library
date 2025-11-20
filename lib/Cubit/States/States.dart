@@ -3,6 +3,7 @@
 import 'package:online_library_app/Models/Responses/AllBooksResponse.dart';
 import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
+import 'package:online_library_app/Models/Responses/BorrowResponse.dart';
 import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/SaveBookResponse.dart';
@@ -12,6 +13,7 @@ import '../../Models/Responses/AllCategoriesResponse.dart';
 import '../../Models/Responses/AllSavedBooksResponse.dart';
 import '../../Models/Responses/BookByIdResponse.dart';
 import '../../Models/Responses/ChangePaswwordResponse.dart';
+import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
@@ -157,6 +159,18 @@ class SearchBooksSuccessState extends States {
   final List<SearchBooks> search;
 
   SearchBooksSuccessState({required this.search});
+}
+
+class BorrowBooksSuccessState extends States {
+  final BorrowData borrowData;
+
+  BorrowBooksSuccessState({required this.borrowData});
+}
+
+class GetBorrowBooksSuccessState extends States {
+  final List<Borrowed> borrow;
+
+  GetBorrowBooksSuccessState({required this.borrow});
 }
 
 

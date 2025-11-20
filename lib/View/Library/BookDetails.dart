@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
@@ -483,6 +484,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                             }
                           } else {
                             // الكتاب مش محفوظ → هنضيفه
+                            showOverlayMessage(context, "Book added to save list", isError: false);
+
                             final request = SaveBookRequest(bookId: widget.bookId);
                             cubit.saveBook(request);
                           }
@@ -508,58 +511,70 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                   ),
 
                   SizedBox(width: 10.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showCommonBottomSheet(
-                          context: context,
-                          imagePath: 'assets/images/borrow.png',
-                          title: 'Borrow this book now?',
-                          description:
+                  BlocListener<BorrowCubit, States>(
+                    listener: (context, state) {
+                      if (state is BorrowBooksSuccessState) {
+                        // هنا لما العملية نجحت
+                        Navigator.of(context).pushReplacement(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                QRBorrowScreen(borrowData: state.borrowData),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          ),
+                        );
+                      } else if (state is ErrorState) {
+                        showOverlayMessage(context, state.errorMessage ?? "Try again", isError: true);
+                      } else if (state is LoadingState) {
+                        showOverlayMessage(context, state.loadingMessage ?? "Loading...", isError: false);
+                      }
+                    },
+                    child: Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            showCommonBottomSheet(
+                              context: context,
+                              imagePath: 'assets/images/borrow.png',
+                              title: 'Borrow this book now?',
+                              description:
                               'Are you sure to borrow this book? Once you borrow, you must scan the QR to the librarian!',
-                          primaryButtonText: 'Yes, borrow',
-                          onPrimaryPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) =>
-                                        QRBorrowScreen(),
-                                transitionDuration: Duration.zero,
-                                reverseTransitionDuration: Duration.zero,
-                              ),
+                              primaryButtonText: 'Yes, borrow',
+                              onPrimaryPressed: () {
+                                context.read<BorrowCubit>().borrowBooks(widget.bookId);
+                              },
+                              secondaryButtonText: 'Cancel',
+                              onSecondaryPressed: () {
+                                Navigator.pop(context);
+                              },
                             );
                           },
-                          secondaryButtonText: 'Cancel',
-                          onSecondaryPressed: () {
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColors.primaryColor,
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12.h,
-                          horizontal: 16.w,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50.r),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Borrow now",
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: MyColors.whiteColor,
-                              fontWeight: FontWeight.w500,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: MyColors.primaryColor,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 12.h,
+                              horizontal: 16.w,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.r),
                             ),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Borrow now",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: MyColors.whiteColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ),
-                  ),
+
+                  )
                 ],
               ),
             ),
