@@ -190,9 +190,11 @@ class QRBorrowScreen extends StatelessWidget{
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(8.r),
-                          child: Image.asset('assets/images/book.png',
+                          child: Image.network(borrowData.borrow?.book!.mainImage ??'assets/images/book.png',
                             height: 200.h,
-                            //fit: BoxFit.,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset("assets/images/book.png", height: 180.h,);
+                            },
                           ),
                         ),
                       ),

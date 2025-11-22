@@ -5,6 +5,7 @@ import 'package:online_library_app/Models/Responses/BookReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/BooksByCategoryIdResponse.dart';
 import 'package:online_library_app/Models/Responses/BorrowResponse.dart';
 import 'package:online_library_app/Models/Responses/CategoryByIdResponse.dart';
+import 'package:online_library_app/Models/Responses/ReturnResponse.dart';
 import 'package:online_library_app/Models/Responses/ReviewResponse.dart';
 import 'package:online_library_app/Models/Responses/SaveBookResponse.dart';
 import 'package:online_library_app/Models/Responses/SearchResponse.dart';
@@ -169,8 +170,17 @@ class BorrowBooksSuccessState extends States {
 
 class GetBorrowBooksSuccessState extends States {
   final List<Borrowed> borrow;
+  final List<Returned> returned;
 
-  GetBorrowBooksSuccessState({required this.borrow});
+  GetBorrowBooksSuccessState({required this.borrow,required this.returned});
+}
+
+
+
+class ReturnBooksSuccessState extends States {
+  final ReturnData returnData;
+
+  ReturnBooksSuccessState({required this.returnData});
 }
 
 

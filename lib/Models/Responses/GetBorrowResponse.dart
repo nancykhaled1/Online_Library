@@ -39,15 +39,15 @@ class Data {
         borrowed?.add(Borrowed.fromJson(v));
       });
     }
-    // if (json['returned'] != null) {
-    //   returned = [];
-    //   json['returned'].forEach((v) {
-    //     returned?.add(Dynamic.fromJson(v));
-    //   });
-    // }
+    if (json['returned'] != null) {
+      returned = [];
+      json['returned'].forEach((v) {
+        returned?.add(Returned.fromJson(v));
+      });
+    }
   }
   List<Borrowed>? borrowed;
-  List<dynamic>? returned;
+  List<Returned>? returned;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -252,6 +252,86 @@ class BookId {
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
+    return map;
+  }
+
+}
+
+
+class Returned {
+  Returned({
+    this.id,
+    this.userId,
+    this.bookId,
+    this.borrowDate,
+    this.borrowTime,
+    this.mustReturnDate,
+    this.status,
+    this.qrCodeBorrow,
+    this.qrBorrowExpiresAt,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+    this.scannedByAdminAt,
+    this.qrCodeReturn,
+    this.qrReturnExpiresAt,
+    this.returnedAt,});
+
+  Returned.fromJson(dynamic json) {
+    id = json['_id'];
+    userId = json['userId'];
+    bookId = json['bookId'] != null ? BookId.fromJson(json['bookId']) : null;
+    borrowDate = json['borrowDate'];
+    borrowTime = json['borrowTime'];
+    mustReturnDate = json['mustReturnDate'];
+    status = json['status'];
+    qrCodeBorrow = json['qrCodeBorrow'];
+    qrBorrowExpiresAt = json['qrBorrowExpiresAt'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    v = json['__v'];
+    scannedByAdminAt = json['scannedByAdminAt'];
+    qrCodeReturn = json['qrCodeReturn'];
+    qrReturnExpiresAt = json['qrReturnExpiresAt'];
+    returnedAt = json['returnedAt'];
+  }
+  String? id;
+  String? userId;
+  BookId? bookId;
+  String? borrowDate;
+  String? borrowTime;
+  String? mustReturnDate;
+  String? status;
+  String? qrCodeBorrow;
+  String? qrBorrowExpiresAt;
+  String? createdAt;
+  String? updatedAt;
+  int? v;
+  String? scannedByAdminAt;
+  String? qrCodeReturn;
+  String? qrReturnExpiresAt;
+  String? returnedAt;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['_id'] = id;
+    map['userId'] = userId;
+    if (bookId != null) {
+      map['bookId'] = bookId?.toJson();
+    }
+    map['borrowDate'] = borrowDate;
+    map['borrowTime'] = borrowTime;
+    map['mustReturnDate'] = mustReturnDate;
+    map['status'] = status;
+    map['qrCodeBorrow'] = qrCodeBorrow;
+    map['qrBorrowExpiresAt'] = qrBorrowExpiresAt;
+    map['createdAt'] = createdAt;
+    map['updatedAt'] = updatedAt;
+    map['__v'] = v;
+    map['scannedByAdminAt'] = scannedByAdminAt;
+    map['qrCodeReturn'] = qrCodeReturn;
+    map['qrReturnExpiresAt'] = qrReturnExpiresAt;
+    map['returnedAt'] = returnedAt;
     return map;
   }
 

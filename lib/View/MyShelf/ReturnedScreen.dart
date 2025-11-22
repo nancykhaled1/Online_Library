@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
+import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Utils/MyColors.dart';
 import '../Home/home.dart';
 import '../Library/MoreDetailsScreen.dart';
@@ -8,8 +10,25 @@ import 'ReturnSheet.dart';
 
 
 class ReturnedScreen extends StatelessWidget{
+  Returned returnedBook;
+  ReturnedScreen({super.key, required this.returnedBook});
   @override
   Widget build(BuildContext context) {
+    final parsedDate =
+    DateTime.parse(returnedBook.borrowDate!).toLocal();
+    final formattedDate = DateFormat(
+      'dd/MM',
+    ).format(parsedDate);
+
+    final formattedTime = DateFormat(
+      'HH:mm',
+    ).format(parsedDate);
+
+    final Date =
+    DateTime.parse(returnedBook.returnedAt!).toLocal();
+    final returnDate = DateFormat(
+      'dd/MM',
+    ).format(Date);
     return SafeArea(child: Scaffold(
       backgroundColor: MyColors.whiteColor,
       appBar: AppBar(
@@ -54,9 +73,9 @@ class ReturnedScreen extends StatelessWidget{
             ),
             child: Column(
               children: [
-                buildRow("Borrow date", "15 August 2025"),
-                buildRow("Borrow time", "10:30 Am"),
-                buildRow("Returned on", "18 August 2025"),
+                buildRow("Borrow date", formattedDate),
+                buildRow("Borrow time", returnedBook.borrowTime ??''),
+                buildRow("Returned on", returnDate),
               ],
             ),
           ),
@@ -92,15 +111,17 @@ class ReturnedScreen extends StatelessWidget{
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(8.r),
-                        child: Image.asset('assets/images/book.png',
+                        child: Image.network(returnedBook.bookId!.mainImage ??'assets/images/book.png',
                           height: 200.h,
-                          //fit: BoxFit.,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset("assets/images/book.png", height: 180.h,);
+                          },
                         ),
                       ),
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      "Fisika Kelas XI",
+                      returnedBook.bookId?.name ?? 'no name',
                       style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w800,
@@ -109,7 +130,7 @@ class ReturnedScreen extends StatelessWidget{
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      "Erlangga",
+                      returnedBook.bookId?.writer ??'no writer',
                       style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
@@ -126,39 +147,39 @@ class ReturnedScreen extends StatelessWidget{
 
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16.r),
-        child: ElevatedButton(
-          onPressed: (){
-            returnedSheet(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MyColors.primaryColor,
-            padding: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 16.w,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50.r),
-            ),
-          ),
-          child:
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Return",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: MyColors.whiteColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: EdgeInsets.all(16.r),
+      //   child: ElevatedButton(
+      //     onPressed: (){
+      //       returnedSheet(context);
+      //     },
+      //     style: ElevatedButton.styleFrom(
+      //       backgroundColor: MyColors.primaryColor,
+      //       padding: EdgeInsets.symmetric(
+      //         vertical: 12.h,
+      //         horizontal: 16.w,
+      //       ),
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(50.r),
+      //       ),
+      //     ),
+      //     child:
+      //     Row(
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       children: [
+      //         Text(
+      //           "Return",
+      //           style: TextStyle(
+      //             fontSize: 14.sp,
+      //             color: MyColors.whiteColor,
+      //             fontWeight: FontWeight.w500,
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //
+      //   ),
+      // ),
     )
     );
   }

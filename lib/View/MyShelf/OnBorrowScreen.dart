@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:online_library_app/Cubit/MyShelf/ReturnViewModel.dart';
+import 'package:online_library_app/Cubit/States/States.dart';
 
 import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Utils/MyColors.dart';
@@ -149,35 +152,58 @@ class OnBorrowScreen extends StatelessWidget{
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.r),
-        child: ElevatedButton(
-          onPressed: (){
-            returnedSheet(context);
-            },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MyColors.primaryColor,
-            padding: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 16.w,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50.r),
-            ),
-          ),
-          child:
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Return",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: MyColors.whiteColor,
-                  fontWeight: FontWeight.w500,
+        child: BlocConsumer<ReturnedCubit, States>(
+          listener: (context, state) {
+            if (state is ReturnBooksSuccessState) {
+
+              // افتح الـ sheet وبعتي الداتا اللي جت من الـ API
+              returnedSheet(context, state.returnData);
+
+            }
+
+            if (state is ErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMessage ?? "Error")),
+              );
+            }
+          },
+          builder: (context, state) {
+            bool isLoading = state is LoadingState;
+
+            return ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () {
+                context.read<ReturnedCubit>().returnBooks(borrowBook.id!);
+              },
+
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColors.primaryColor,
+                padding: EdgeInsets.symmetric(
+                  vertical: 12.h,
+                  horizontal: 16.w,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50.r),
                 ),
               ),
-            ],
-          ),
-
+              child: isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Return",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: MyColors.whiteColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     )

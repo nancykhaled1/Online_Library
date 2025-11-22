@@ -17,9 +17,11 @@ import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
 import 'package:online_library_app/Cubit/Search/SearchScreenViewModel.dart';
 import 'package:online_library_app/Repositories/BorrowRepository.dart';
+import 'package:online_library_app/Repositories/ReturnRepository.dart';
 import 'package:online_library_app/Repositories/SaveBookRepository.dart';
 import 'package:online_library_app/Repositories/SearchRepository.dart';
 import 'package:online_library_app/Sources/BorrowDataSource.dart';
+import 'package:online_library_app/Sources/ReturnDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 import 'package:online_library_app/Sources/SearchDataSource.dart';
 
@@ -31,6 +33,7 @@ import 'Cubit/Auth/Register/GoogleViewModel.dart';
 import 'Cubit/Auth/Register/RegisterViewModel.dart';
 import 'Cubit/Auth/Register/VerifyemailViewModel.dart';
 import 'Cubit/Home/HomeScreenViewModel.dart';
+import 'Cubit/MyShelf/ReturnViewModel.dart';
 import 'Repositories/AllCategoriesRepository.dart';
 import 'Repositories/ChangePasswordRepository.dart';
 import 'Repositories/GoogleRepository.dart';
@@ -101,6 +104,10 @@ Future<void> main() async {
   final borrowBookDataSource = BorrowRemoteDataSource(apiManager);
   final borrow = BorrowRepository(borrowBookDataSource);
 
+  //borrow
+  final returnBookDataSource = ReturnRemoteDataSource(apiManager);
+  final returned = ReturnRepository(returnBookDataSource);
+
   runApp(
 
     MultiRepositoryProvider(
@@ -149,6 +156,10 @@ Future<void> main() async {
         ),
         RepositoryProvider<BorrowRepository>(
           create: (context) => borrow,
+        ),
+
+        RepositoryProvider<ReturnRepository>(
+          create: (context) => returned,
         ),
 
 
@@ -241,6 +252,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => BorrowCubit(
               context.read<BorrowRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => ReturnedCubit(
+              context.read<ReturnRepository>(),
             ),
           ),
 

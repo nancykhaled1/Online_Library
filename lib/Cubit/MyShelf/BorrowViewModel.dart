@@ -10,6 +10,8 @@ class BorrowCubit extends Cubit<States> {
 
 
   List<Borrowed> borrowedBook = [];
+  List<Returned> returnedBook = [];
+
 
 
   Future<void> borrowBooks(String bookId) async {
@@ -37,7 +39,8 @@ class BorrowCubit extends Cubit<States> {
         },
             (success) {
               borrowedBook = success.data?.borrowed ??[];
-          emit(GetBorrowBooksSuccessState(borrow: borrowedBook));
+              returnedBook = success.data?.returned ??[];
+          emit(GetBorrowBooksSuccessState(borrow: borrowedBook, returned: returnedBook));
         }
     );
   }
