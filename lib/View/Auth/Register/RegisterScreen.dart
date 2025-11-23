@@ -422,11 +422,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
-              suffixIconFunction: () {
-                setState(() {
-                  viewModel.isRePasswordVisible = !viewModel.isRePasswordVisible;
-                });
-              },
             ),
 
           ),

@@ -32,6 +32,7 @@ import '../../Models/Responses/ChangePaswwordResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginError.dart';
 import '../../Models/Responses/LoginResponse.dart';
+import '../../Models/Responses/ProfileResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
 import '../../Models/Responses/ResetPasswordResponse.dart';
 import '../../Models/Responses/SaveBookResponse.dart';
@@ -1314,6 +1315,63 @@ class ApiManager{
       );
     }
   }
+
+  Future<Either<LoginError, ProfileResponse>> getProfile() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      Uri url = Uri.https(ApiConstants.baseurl, ApiConstants.profileApi);
+
+      final savedToken = await TokenStorage.getToken();
+
+      if (savedToken == null) {
+        print("⚠️ No auth token saved, user might not be logged in.");
+        return left(
+          LoginError(
+            success: false,
+            error: LoginDetailsError(
+              code: 401,
+              message: "Unauthorized: No token found, please login again.",
+            ),
+          ),
+        );
+      }
+
+      var response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $savedToken",
+          "Content-Type": "application/json",
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        /// هنا بعمل parse للـ object كله
+        var profileResponse = ProfileResponse.fromJson(jsonResponse);
+
+        return right(profileResponse);
+      } else {
+        return left(LoginError.fromJson(jsonResponse));
+      }
+    } else {
+      return left(
+        LoginError(
+          success: false,
+          error: LoginDetailsError(
+            code: 0,
+            message: "No Internet Connection",
+          ),
+        ),
+      );
+    }
+  }
+
 
 
 

@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../Cubit/Profile/ProfileViewModel.dart';
+import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
 import 'AccountSettings.dart';
 import 'PersonalDetails.dart';
 
 
-class ProfileScreen extends StatelessWidget{
+class ProfileScreen extends StatefulWidget{
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileViewModel>().getProfile();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -28,36 +42,90 @@ class ProfileScreen extends StatelessWidget{
               ),
             ),
             SizedBox(height: 25.h,),
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: MyColors.primaryColor,
-                 // child: Image.asset('assets/images/book.png'),
-                ),
-                SizedBox(width: 10.h),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('nancy khaled',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      color: MyColors.blackColor
+    BlocBuilder<ProfileViewModel, States>(
+    builder: (context, state) {
+      final cubit = context.read<ProfileViewModel>();
+      String? imageUrl = cubit.profileImageUrl;
+
+
+      if (state is LoadingState) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      } else if (state is ErrorState) {
+        return Text(
+          'please try again later',
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 13.sp,
+          ),
+        );
+      } else {
+        return
+          Row(
+            children: [
+            CircleAvatar(
+            radius: 50.r,
+            backgroundColor: MyColors.whiteColor,
+            child: ClipOval(
+              child: imageUrl != null && imageUrl.isNotEmpty
+                  ? Image.network(
+                "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                key: UniqueKey(),
+                fit: BoxFit.cover,
+                width: 100.w,
+                height: 100.h,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: MyColors.primaryColor,
                     ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) =>
+                    Image.asset('assets/images/userProfile.png',
+                        fit: BoxFit.fill,
+                        width: 100.w,
+                        height: 100.h
                     ),
-                    SizedBox(height: 5.h,),
-                    Text('nancykhaled@gmail.com',
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: MyColors.greyColor
-                      ),
-                    ),
-                  ],
-                )
-              ],
+              )
+                  : Image.asset(
+                'assets/images/userProfile.png',
+                fit: BoxFit.cover,
+                width: 100.w,
+                height: 100.h,
+              ),
             ),
+          ),
+              SizedBox(width: 10.h),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text( cubit.userNameController.text.isNotEmpty
+                  ? cubit.userNameController.text : ' ',
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: MyColors.blackColor
+                    ),
+                  ),
+                  SizedBox(height: 5.h,),
+                  Text(cubit.emailController.text.isNotEmpty
+                    ? cubit.emailController.text : '',
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: MyColors.greyColor
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+      }
+    }
+                    ),
             SizedBox(height: 25.h,),
             Text('Account',
               style: TextStyle(
@@ -214,5 +282,4 @@ class ProfileScreen extends StatelessWidget{
       ),
     ));
   }
-
 }

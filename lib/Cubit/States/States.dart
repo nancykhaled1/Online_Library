@@ -17,6 +17,7 @@ import '../../Models/Responses/ChangePaswwordResponse.dart';
 import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginResponse.dart';
+import '../../Models/Responses/ProfileResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
 import '../../Models/Responses/RemoveSavedBook.dart';
 import '../../Models/Responses/ResetPasswordResponse.dart';
@@ -181,6 +182,13 @@ class ReturnBooksSuccessState extends States {
   final ReturnData returnData;
 
   ReturnBooksSuccessState({required this.returnData});
+}
+
+
+class ProfileSuccessState extends States {
+  final ProfileUser user;
+
+  ProfileSuccessState({required this.user});
 }
 
 

@@ -32,6 +32,8 @@ class ApiConstants{
 
   static const String borrowApi = "/api/user/borrows";
 
+  static const String profileApi = "/api/user/profile";
+
 
 
 
@@ -44,7 +46,7 @@ class ApiConstants{
 
   static const String myAttemptApi = "/api/user/exam/attempts";
 
-  static const String profileApi = "/api/user/auth/local/profile";
+
 
   static const String updateDataApi = "/api/user/auth/local/update";
 

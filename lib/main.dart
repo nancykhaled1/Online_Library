@@ -15,12 +15,14 @@ import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
+import 'package:online_library_app/Cubit/Profile/ProfileViewModel.dart';
 import 'package:online_library_app/Cubit/Search/SearchScreenViewModel.dart';
 import 'package:online_library_app/Repositories/BorrowRepository.dart';
 import 'package:online_library_app/Repositories/ReturnRepository.dart';
 import 'package:online_library_app/Repositories/SaveBookRepository.dart';
 import 'package:online_library_app/Repositories/SearchRepository.dart';
 import 'package:online_library_app/Sources/BorrowDataSource.dart';
+import 'package:online_library_app/Sources/ProfiledataSource.dart';
 import 'package:online_library_app/Sources/ReturnDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 import 'package:online_library_app/Sources/SearchDataSource.dart';
@@ -38,6 +40,7 @@ import 'Repositories/AllCategoriesRepository.dart';
 import 'Repositories/ChangePasswordRepository.dart';
 import 'Repositories/GoogleRepository.dart';
 import 'Repositories/LoginRepository.dart';
+import 'Repositories/ProfileRepository.dart';
 import 'Repositories/RegisterRepository.dart';
 import 'Repositories/ResetPasswordRepository.dart';
 import 'Repositories/SendEmailRepository.dart';
@@ -108,6 +111,10 @@ Future<void> main() async {
   final returnBookDataSource = ReturnRemoteDataSource(apiManager);
   final returned = ReturnRepository(returnBookDataSource);
 
+  //profile
+  final profileDataSource = ProfileDataSource(apiManager);
+  final profile = ProfileRepository(profileDataSource);
+
   runApp(
 
     MultiRepositoryProvider(
@@ -160,6 +167,10 @@ Future<void> main() async {
 
         RepositoryProvider<ReturnRepository>(
           create: (context) => returned,
+        ),
+
+        RepositoryProvider<ProfileRepository>(
+          create: (context) => profile,
         ),
 
 
@@ -258,6 +269,12 @@ Future<void> main() async {
           BlocProvider(
             create: (context) => ReturnedCubit(
               context.read<ReturnRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => ProfileViewModel(
+              context.read<ProfileRepository>(),
             ),
           ),
 
