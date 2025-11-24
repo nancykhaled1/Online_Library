@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             children: [
             CircleAvatar(
-            radius: 50.r,
+            radius: 35.r,
             backgroundColor: MyColors.whiteColor,
             child: ClipOval(
               child: imageUrl != null && imageUrl.isNotEmpty
@@ -84,14 +84,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
                 errorBuilder: (context, error, stackTrace) =>
-                    Image.asset('assets/images/userProfile.png',
+                    Image.asset('assets/images/personalImage.png',
                         fit: BoxFit.fill,
                         width: 100.w,
                         height: 100.h
                     ),
               )
                   : Image.asset(
-                'assets/images/userProfile.png',
+                'assets/images/personalImage.png',
                 fit: BoxFit.cover,
                 width: 100.w,
                 height: 100.h,
@@ -145,6 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SvgPicture.asset('assets/images/profile.svg',
                   width: 20.w,
                     height: 17.h,
+                    color: MyColors.blackColor,
                   ),
                   SizedBox(width: 10.h,),
                   Text('Personal details',

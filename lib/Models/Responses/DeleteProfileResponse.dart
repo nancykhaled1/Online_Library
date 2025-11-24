@@ -1,12 +1,12 @@
 /// success : true
-/// data : {"message":"User profile fetched","user":{"_id":"692466ff58540df5fe549dc6","name":"nancy","email":"nancyhendawy22@gmail.com","phone":"01012342678","role":"user","photo":null,"gender":"female","emailVerified":true,"createdAt":"2025-11-24T14:09:03.087Z","updatedAt":"2025-11-24T14:10:17.464Z","__v":0,"id":"692466ff58540df5fe549dc6"}}
+/// data : {"message":"User profile deleted","user":{"_id":"692466ff58540df5fe549dc6","name":"nancy","email":"nancyhendawy22@gmail.com","phone":"01012342678","role":"user","photo":"https://res.cloudinary.com/diubywm4o/image/upload/v1763995182/users/fbywcuq8gcphdcw1a94f.jpg","gender":"female","emailVerified":true,"createdAt":"2025-11-24T14:09:03.087Z","updatedAt":"2025-11-24T14:39:42.933Z","__v":0,"id":"692466ff58540df5fe549dc6"}}
 
-class ProfileResponse {
-  ProfileResponse({
+class DeleteProfileResponse {
+  DeleteProfileResponse({
       this.success, 
       this.data,});
 
-  ProfileResponse.fromJson(dynamic json) {
+  DeleteProfileResponse.fromJson(dynamic json) {
     success = json['success'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
@@ -24,8 +24,8 @@ class ProfileResponse {
 
 }
 
-/// message : "User profile fetched"
-/// user : {"_id":"692466ff58540df5fe549dc6","name":"nancy","email":"nancyhendawy22@gmail.com","phone":"01012342678","role":"user","photo":null,"gender":"female","emailVerified":true,"createdAt":"2025-11-24T14:09:03.087Z","updatedAt":"2025-11-24T14:10:17.464Z","__v":0,"id":"692466ff58540df5fe549dc6"}
+/// message : "User profile deleted"
+/// user : {"_id":"692466ff58540df5fe549dc6","name":"nancy","email":"nancyhendawy22@gmail.com","phone":"01012342678","role":"user","photo":"https://res.cloudinary.com/diubywm4o/image/upload/v1763995182/users/fbywcuq8gcphdcw1a94f.jpg","gender":"female","emailVerified":true,"createdAt":"2025-11-24T14:09:03.087Z","updatedAt":"2025-11-24T14:39:42.933Z","__v":0,"id":"692466ff58540df5fe549dc6"}
 
 class Data {
   Data({
@@ -34,10 +34,10 @@ class Data {
 
   Data.fromJson(dynamic json) {
     message = json['message'];
-    user = json['user'] != null ? ProfileUser.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
   String? message;
-  ProfileUser? user;
+  User? user;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -55,16 +55,16 @@ class Data {
 /// email : "nancyhendawy22@gmail.com"
 /// phone : "01012342678"
 /// role : "user"
-/// photo : null
+/// photo : "https://res.cloudinary.com/diubywm4o/image/upload/v1763995182/users/fbywcuq8gcphdcw1a94f.jpg"
 /// gender : "female"
 /// emailVerified : true
 /// createdAt : "2025-11-24T14:09:03.087Z"
-/// updatedAt : "2025-11-24T14:10:17.464Z"
+/// updatedAt : "2025-11-24T14:39:42.933Z"
 /// __v : 0
 /// id : "692466ff58540df5fe549dc6"
 
-class ProfileUser {
-  ProfileUser({
+class User {
+  User({
       this.id, 
       this.name, 
       this.email, 
@@ -78,7 +78,7 @@ class ProfileUser {
       this.v, 
       });
 
-  ProfileUser.fromJson(dynamic json) {
+  User.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
     email = json['email'];
@@ -90,14 +90,13 @@ class ProfileUser {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     v = json['__v'];
-    id = json['id'];
   }
   String? id;
   String? name;
   String? email;
   String? phone;
   String? role;
-  dynamic photo;
+  String? photo;
   String? gender;
   bool? emailVerified;
   String? createdAt;
@@ -117,7 +116,6 @@ class ProfileUser {
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
-    map['id'] = id;
     return map;
   }
 

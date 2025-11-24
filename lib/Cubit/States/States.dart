@@ -14,6 +14,7 @@ import '../../Models/Responses/AllCategoriesResponse.dart';
 import '../../Models/Responses/AllSavedBooksResponse.dart';
 import '../../Models/Responses/BookByIdResponse.dart';
 import '../../Models/Responses/ChangePaswwordResponse.dart';
+import '../../Models/Responses/DeleteProfileResponse.dart';
 import '../../Models/Responses/GetBorrowResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginResponse.dart';
@@ -191,4 +192,22 @@ class ProfileSuccessState extends States {
   ProfileSuccessState({required this.user});
 }
 
+
+class UpdateProfileSuccessState extends States {
+  final ProfileUser user;
+
+  UpdateProfileSuccessState({required this.user});
+}
+
+class UploadImageSuccessState extends States {
+  final String imageUrl;
+  UploadImageSuccessState(this.imageUrl);
+}
+
+class ChangeEditState extends States {}
+
+class DeleteProfileSuccessState extends States {
+  final DeleteProfileResponse response;
+  DeleteProfileSuccessState(this.response);
+}
 

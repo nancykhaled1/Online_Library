@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:online_library_app/View/Home/home.dart';
 
 import '../../Cubit/Profile/ProfileViewModel.dart';
 import '../../Cubit/States/States.dart';
@@ -31,29 +32,64 @@ class _PersonalDetailsState extends State<PersonalDetails> {
 
     return SafeArea(child: Scaffold(
       backgroundColor: MyColors.whiteColor,
-      appBar: AppBar(
-        backgroundColor: MyColors.whiteColor,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        title:  Text('Personal Details',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
-            color: MyColors.blackColor,
-          ),
+      appBar:AppBar(
+      backgroundColor: MyColors.whiteColor,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
+      title: Text(
+        'Personal Details',
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 16.sp,
+          color: MyColors.blackColor,
         ),
-        leading: IconButton(onPressed: (){
+      ),
+      leading: IconButton(
+        onPressed: () {
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(initialIndex: 3,),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),
           );
         },
-            icon: Icon(Icons.arrow_back)),
+        icon: Icon(Icons.arrow_back),
       ),
+
+      /// 🔥 زرار Edit / Save
+      actions: [
+        BlocBuilder<ProfileViewModel, States>(
+          builder: (context, state) {
+            final viewModel = context.read<ProfileViewModel>();
+
+            return TextButton(
+              onPressed: () {
+                if (!viewModel.isEditable) {
+                  // ادخل وضع التعديل
+                  viewModel.toggleEdit();
+                } else {
+                  // اعمل Update
+                  viewModel.updateProfile();
+                }
+              },
+
+              child: Text(
+                viewModel.isEditable ? "Save" : "Edit",
+                style: TextStyle(
+                  color: MyColors.primaryColor,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+            );
+          },
+        ),
+      ],
+    ),
+
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: 16.w,
@@ -65,9 +101,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
 
             if (state is LoadingState) {
               return Center(
-                child: CircularProgressIndicator(
-                  color: MyColors.primaryColor,
-                ),
+                child: CircularProgressIndicator(),
               );
             }
 
@@ -78,24 +112,84 @@ class _PersonalDetailsState extends State<PersonalDetails> {
             }
             return Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: MyColors.primaryColor,
-                  // child: Image.asset('assets/images/book.png'),
+              CircleAvatar(
+              radius: 50.r,
+              backgroundColor:
+              MyColors.whiteColor,
+              child: ClipOval(
+                child:
+                viewModel.image != null
+                    ? Image.file(
+                  viewModel.image!,
+                  width: 100.w,
+                  height: 100.h,
+                  fit: BoxFit.cover,
+                )
+                    : viewModel.profileImageUrl !=
+                    null &&
+                    viewModel
+                        .profileImageUrl!
+                        .startsWith(
+                      'http',
+                    )
+                    ? Image.network(
+                  viewModel
+                      .profileImageUrl!,
+                  width: 100.w,
+                  height: 100.h,
+                  fit: BoxFit.cover,
+                  key: UniqueKey(),
+                  loadingBuilder: (
+                      context,
+                      child,
+                      loadingProgress,
+                      ) {
+                    if (loadingProgress ==
+                        null)
+                      return child;
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color:
+                        MyColors
+                            .primaryColor,
+                      ),
+                    );
+                  },
+                  errorBuilder:
+                      (
+                      context,
+                      error,
+                      stackTrace,
+                      ) => Image.asset(
+                    'assets/images/userProfile.png',
+                    fit: BoxFit.cover,
+                  ),
+                )
+                    : Image.asset(
+                  viewModel
+                      .profileImageUrl ??
+                      'assets/images/userProfile.png',
+                  // width: 120.w,
+                  // height: 120.h,
+                  fit: BoxFit.cover,
                 ),
+              ),
+            ),
                 SizedBox(height: 10.h),
 
                 TextButton(
-                  onPressed: (){
-
-                  },
-                  child: Text('change photo profile',
+                  onPressed: viewModel.isEditable ? () {
+                    viewModel.pickProfileImage();
+                  } : null,
+                  child: viewModel.isEditable ? Text(
+                    'change photo profile',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14.sp,
-                      color: MyColors.primaryColor,
+                     color: MyColors.primaryColor
+                     // color: viewModel.isEditable ? MyColors.primaryColor : Colors.grey,
                     ),
-                  ),
+                  ) : Container(),
                 ),
 
                 SizedBox(height: 10.h),
@@ -105,7 +199,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                   keyboardType: TextInputType.text,
                   label: "Full Name",
                   hintText: "",
-                  readonly: true,
+                  readonly: !viewModel.isEditable,
                   prefixIcon: Icons.perm_identity,
                   controller: viewModel.userNameController,
                   validator: (text) {
@@ -118,7 +212,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                 ),
                 SizedBox(height: 20.h),
                 CustomTextField(
-                  readonly: true,
+                  readonly: !viewModel.isEditable,
                   keyboardType: TextInputType.emailAddress,
                   label: "Email",
                   prefixIcon: Icons.email_outlined,
@@ -142,7 +236,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                 CustomTextField(
                   prefixIcon: Icons.phone_android,
 
-                  readonly: true,
+                  readonly: !viewModel.isEditable,
                   keyboardType: TextInputType.phone,
                   label: "Phone",
                   hintText: "",
@@ -157,108 +251,24 @@ class _PersonalDetailsState extends State<PersonalDetails> {
 
                 ),
                 SizedBox(height: 20.h),
-                buildGenderDropdown(viewModel)
+                CustomTextField(
+                  readonly: true,
+                  label: "Gender",
+                  hintText: "",
+                  prefixIcon: Icons.person,
+                  controller: viewModel.genderController,
+                  validator: (text) {
+                    if (text == null || text.isEmpty || text.trim().isEmpty) {
+                      return 'please choose your gender';
+                    }
+                    return null;
+                  },
+                ),
               ],
             );
           },
         ),
-
-
-
-
-
       ),
     ));
-  }
-
-  Widget buildGenderDropdown(ProfileViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // الحقل الرئيسي
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              viewModel.showDropdownlevel = !viewModel.showDropdownlevel;
-            });
-          },
-          child: AbsorbPointer(
-            child: CustomTextField(
-              keyboardType: TextInputType.visiblePassword,
-              label: "Gender",
-              hintText: "Choose your gender",
-              prefixIcon: Icons.lock_outline,
-              controller: viewModel.genderController,
-              suffixIcon: Icon(
-                viewModel.showDropdownlevel
-                    ? Icons.arrow_drop_up
-                    : Icons.arrow_drop_down, // تغيير الأيقونة
-                size: 35.sp,
-                color: MyColors.primaryColor,
-              ),
-              readonly: true,
-              validator: (text) {
-                if (text == null || text.isEmpty || text.trim().isEmpty) {
-                  return 'please choose your gender';
-                }
-                return null;
-              },
-            ),
-
-          ),
-        ),
-
-        // القائمة المنسدلة
-        if (viewModel.showDropdownlevel)
-          Column(
-            children:
-            viewModel.gender.map((item) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    viewModel.genderController.text = item;
-                    viewModel.showDropdownlevel = false;
-                  });
-                },
-
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    border: Border.symmetric(
-                      horizontal: BorderSide(color: MyColors.softGreyColor),
-                    ),
-                    // borderRadius: BorderRadius.circular(10.r),
-                    color: MyColors.whiteColor,
-                  ),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/level.svg',
-                        width: 15.sp,
-                        height: 15.sp,
-                        colorFilter: ColorFilter.mode(
-                          Color(0xFF7A7A7A),
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      SizedBox(width: 20.w),
-                      Text(
-                        item,
-                        style: TextStyle(
-                          color: MyColors.greyColor,
-                          fontFamily: "Noto Kufi Arabic",
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-      ],
-    );
   }
 }
