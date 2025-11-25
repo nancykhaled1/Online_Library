@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../Cubit/Auth/Register/VerifyemailViewModel.dart';
 import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
+import '../../../Utils/dialog.dart';
 import '../../Home/home.dart';
 
 
@@ -19,7 +20,6 @@ class VerifyEmail extends StatefulWidget {
 }
 
 class _VerifyEmailState extends State<VerifyEmail> {
-  // String? code;
 
 
 
@@ -30,14 +30,13 @@ class _VerifyEmailState extends State<VerifyEmail> {
     return BlocConsumer<VerifyEmailCubit, States>(
       listener: (context, state) async {
         if (state is VerifyEmailSuccessState) {
-         // showOverlayMessage(context, state.response.data.message, isError: false);
-            // default fallback
+          showOverlayMessage(context, state.response.data.message, isError: false);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => HomeScreen()),
             );
           } else if (state is ErrorState) {
-         // showOverlayMessage(context, state.errorMessage!, isError: true);
+          showOverlayMessage(context, state.errorMessage!, isError: true);
         }
 
       },
@@ -45,17 +44,17 @@ class _VerifyEmailState extends State<VerifyEmail> {
         return SafeArea(
           child: Scaffold(
             backgroundColor: MyColors.whiteColor,
-            appBar: AppBar(
-              leading: GestureDetector(
-                  onTap: (){
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.arrow_back)),
-              scrolledUnderElevation: 0,
-              elevation: 0,
-              backgroundColor: MyColors.whiteColor,
-
-            ),
+            // appBar: AppBar(
+            //   leading: GestureDetector(
+            //       onTap: (){
+            //         Navigator.pop(context);
+            //       },
+            //       child: Icon(Icons.arrow_back)),
+            //   scrolledUnderElevation: 0,
+            //   elevation: 0,
+            //   backgroundColor: MyColors.whiteColor,
+            //
+            // ),
             body: SingleChildScrollView(
               padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
               child: WillPopScope(
@@ -131,7 +130,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                     color: viewModel.controllers[index].text.isNotEmpty
-                                        ? MyColors.primaryColor
+                                        ? MyColors.inputColor
                                         :
                                     MyColors.greyColor,
                                     width: 1.w,

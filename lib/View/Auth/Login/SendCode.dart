@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../Cubit/Auth/Login/SendCodeViewModel.dart';
 import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
+import '../../../Utils/dialog.dart';
 import 'ResetPassword.dart';
 
 class SendCode extends StatefulWidget {
@@ -31,11 +32,11 @@ class _SendCodeState extends State<SendCode> {
     return BlocConsumer<SendCodeCubit, States>(
       listener: (context, state) {
         if (state is ErrorState) {
-        //  showOverlayMessage(context, state.errorMessage!, isError: true);
+          showOverlayMessage(context, state.errorMessage!, isError: true);
 
         }
         if (state is ResetPassSuccessState) {
-         // showOverlayMessage(context, state.response.data!.message!, isError: false);
+          showOverlayMessage(context, state.response.data!.message!, isError: false);
           final code = context.read<SendCodeCubit>().getEnteredCode();
           print("CODE ENTERED: $code");
           // print("✅ Entered Code: $enteredCode");
@@ -55,17 +56,17 @@ class _SendCodeState extends State<SendCode> {
         return SafeArea(
           child: Scaffold(
             backgroundColor: MyColors.whiteColor,
-            appBar: AppBar(
-              leading: GestureDetector(
-                  onTap: (){
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.arrow_back)),
-              scrolledUnderElevation: 0,
-              elevation: 0,
-              backgroundColor: MyColors.whiteColor,
-
-            ),
+            // appBar: AppBar(
+            //   leading: GestureDetector(
+            //       onTap: (){
+            //         Navigator.pop(context);
+            //       },
+            //       child: Icon(Icons.arrow_back)),
+            //   scrolledUnderElevation: 0,
+            //   elevation: 0,
+            //   backgroundColor: MyColors.whiteColor,
+            //
+            // ),
             body: SingleChildScrollView(
               padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
               child: WillPopScope(

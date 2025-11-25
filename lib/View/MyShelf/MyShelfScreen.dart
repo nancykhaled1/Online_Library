@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/States/States.dart';
@@ -137,12 +138,20 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final saved = state.favorite;
             if (saved.isEmpty) {
               return Center(
-                child: Text(
-                  "No saved list",
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    color: MyColors.blackColor,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/nofound.png'),
+                    SizedBox(height: 10.h,),
+                    Text(
+                      "No saved books yet!",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        color: MyColors.blackColor,
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
@@ -246,12 +255,20 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final borrow = state.borrow;
             if (borrow.isEmpty) {
               return Center(
-                child: Text(
-                  "No borrowed list",
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    color: MyColors.blackColor,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/nofound.png'),
+                    SizedBox(height: 10.h,),
+                    Text(
+                      "No borrowed books yet!",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        color: MyColors.blackColor,
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
@@ -389,12 +406,20 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final returned = state.returned;
             if (returned.isEmpty) {
               return Center(
-                child: Text(
-                  "No returned list",
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    color: MyColors.blackColor,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/nofound.png'),
+                    SizedBox(height: 10.h,),
+                    Text(
+                      "No returned books yet!",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        color: MyColors.blackColor,
+                      ),
+                    ),
+                  ],
                 ),
               );
             }

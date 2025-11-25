@@ -26,7 +26,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late LoginScreenCubit loginCubit;
 
+  @override
+  void initState() {
+    super.initState();
+    loginCubit = context.read<LoginScreenCubit>();
+  }
+
+  @override
+  void dispose() {
+    loginCubit.clearForm();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +223,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child:
+                            state is LoadingState
+                                ? SizedBox(
+                              width: 50.w,
+                              height: 20.w,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                AlwaysStoppedAnimation<Color>(
+                                  MyColors.whiteColor,
+                                ),
+                              ),
+                            )
+                                :
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -257,8 +282,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: state is LoadingState
                             ? null
                             : () async {
-                          //final prefs = await SharedPreferences.getInstance();
-                          // final role =  await TokenStorage.getRole();
                           context.read<GoogleCubit>().signInWithGoogle(
                               role:'user'
                           );

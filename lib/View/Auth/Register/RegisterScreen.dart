@@ -8,6 +8,7 @@ import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
 import '../../../Utils/SuccessSheet.dart';
 import '../../../Utils/TextField.dart';
+import '../../../Utils/dialog.dart';
 import '../Login/LoginScreen.dart';
 import 'VerifyEmail.dart';
 
@@ -44,20 +45,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
 
-
     return BlocConsumer<RegisterCubit, States>(
       listener: (context, state) {
         if (state is ErrorState) {
-          //showOverlayMessage(context, state.errorMessage!, isError: true);
+          showOverlayMessage(context, state.errorMessage!, isError: true);
 
         }
 
         else if (state is RegisterSuccessState) {
-          // showOverlayMessage(
-          //   context,
-          //   state.response.data!.message!,
-          //   isError: false,
-          // );
+          showOverlayMessage(
+            context,
+            state.response.data!.message!,
+            isError: false,
+          );
           showSuccessBottomSheet(context);
           final userId = state.response.data?.userId; // استبدل بالاسم المناسب
           Navigator.push(
@@ -277,7 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child:
                               state is LoadingState
                                   ? SizedBox(
-                                width: 20.w,
+                                width: 50.w,
                                 height: 20.w,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
@@ -406,14 +406,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               keyboardType: TextInputType.visiblePassword,
               label: "Gender",
               hintText: "Choose your gender",
-              prefixIcon: Icons.lock_outline,
+              prefixIcon: Icons.person,
               controller: viewModel.genderController,
               suffixIcon: Icon(
                 viewModel.showDropdownlevel
                     ? Icons.arrow_drop_up
                     : Icons.arrow_drop_down, // تغيير الأيقونة
                 size: 35.sp,
-                color: MyColors.primaryColor,
+                color: MyColors.blackColor,
               ),
               readonly: true,
               validator: (text) {
@@ -452,15 +452,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Row(
                     children: [
-                      SvgPicture.asset(
-                        'assets/images/level.svg',
-                        width: 15.sp,
-                        height: 15.sp,
-                        colorFilter: ColorFilter.mode(
-                          Color(0xFF7A7A7A),
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                      // SvgPicture.asset(
+                      //   'assets/images/level.svg',
+                      //   width: 15.sp,
+                      //   height: 15.sp,
+                      //   colorFilter: ColorFilter.mode(
+                      //     Color(0xFF7A7A7A),
+                      //     BlendMode.srcIn,
+                      //   ),
+                      // ),
                       SizedBox(width: 20.w),
                       Text(
                         item,
@@ -468,7 +468,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: MyColors.greyColor,
                           fontFamily: "Noto Kufi Arabic",
                           fontWeight: FontWeight.w400,
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],

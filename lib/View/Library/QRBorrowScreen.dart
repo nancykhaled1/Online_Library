@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,10 +12,48 @@ import '../Home/home.dart';
 import '../widget.dart';
 import 'BookDetails.dart';
 
-class QRBorrowScreen extends StatelessWidget{
+class QRBorrowScreen extends StatefulWidget{
   final BorrowData borrowData; // بيانات الـ borrow اللى جت من Cubit
 
   const QRBorrowScreen({Key? key, required this.borrowData}) : super(key: key);
+
+  @override
+  State<QRBorrowScreen> createState() => _QRBorrowScreenState();
+}
+
+class _QRBorrowScreenState extends State<QRBorrowScreen> {
+  int totalSeconds = 3 * 60 * 60; // 3 ساعات
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
+      if (totalSeconds == 0) {
+        t.cancel();
+        // اختياري: اقفلي الشاشة لو الوقت انتهى
+        // Navigator.pop(context);
+      } else {
+        setState(() {
+          totalSeconds--;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  String formatTime(int seconds) {
+    int h = seconds ~/ 3600;
+    int m = (seconds % 3600) ~/ 60;
+    int s = seconds % 60;
+    return "${h.toString().padLeft(2, '0')} : ${m.toString().padLeft(2, '0')} : ${s.toString().padLeft(2, '0')}";
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -32,7 +72,7 @@ class QRBorrowScreen extends StatelessWidget{
         leading: IconButton(onPressed: (){
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(bookId: borrowData.borrow?.book?.id! ??'',),
+              pageBuilder: (context, animation, secondaryAnimation) => BookDetailsScreen(bookId: widget.borrowData.borrow?.book?.id! ??'',),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),
@@ -87,7 +127,7 @@ class QRBorrowScreen extends StatelessWidget{
                                 ),
                                 SizedBox(width: 5.h),
 
-                                Text(" timer",
+                                Text(formatTime(totalSeconds),
                                   style: TextStyle(
                                       fontSize: 12.sp, color: MyColors.blackColor,
                                       fontWeight: FontWeight.w500
@@ -122,7 +162,7 @@ class QRBorrowScreen extends StatelessWidget{
                 ),
                 child: //buildImage(borrowData.qrCodeBorrow)
 
-                Image.network(borrowData.qrCodeBorrow!,
+                Image.network(widget.borrowData.qrCodeBorrow!,
                 height: 200.h,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset("assets/images/book.png", height: 180.h,);
@@ -153,9 +193,9 @@ class QRBorrowScreen extends StatelessWidget{
               ),
               child: Column(
                 children: [
-                  buildRow("Borrow date", borrowData.borrow!.borrowDate! ?? ''),
-                  buildRow("Borrow time", borrowData.borrow!.borrowTime! ?? ''),
-                  buildRow("Must be returned", borrowData.borrow!.mustReturnDate! ?? ''),
+                  buildRow("Borrow date", widget.borrowData.borrow!.borrowDate! ?? ''),
+                  buildRow("Borrow time", widget.borrowData.borrow!.borrowTime! ?? ''),
+                  buildRow("Must be returned", widget.borrowData.borrow!.mustReturnDate! ?? ''),
                 ],
               ),
             ),
@@ -190,7 +230,7 @@ class QRBorrowScreen extends StatelessWidget{
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(8.r),
-                          child: Image.network(borrowData.borrow?.book!.mainImage ??'assets/images/book.png',
+                          child: Image.network(widget.borrowData.borrow?.book!.mainImage ??'assets/images/book.png',
                             height: 200.h,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset("assets/images/book.png", height: 180.h,);
@@ -200,7 +240,7 @@ class QRBorrowScreen extends StatelessWidget{
                       ),
                       SizedBox(height: 12.h),
                       Text(
-                        borrowData.borrow!.book!.name! ?? '',
+                        widget.borrowData.borrow!.book!.name! ?? '',
                         style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w800,
@@ -209,7 +249,7 @@ class QRBorrowScreen extends StatelessWidget{
                       ),
                       SizedBox(height: 12.h),
                       Text(
-                        borrowData.borrow!.book!.writer! ??'',
+                        widget.borrowData.borrow!.book!.writer! ??'',
                         style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
@@ -228,5 +268,4 @@ class QRBorrowScreen extends StatelessWidget{
       ),
     ));
   }
-
 }

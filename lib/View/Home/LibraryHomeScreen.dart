@@ -12,6 +12,7 @@ import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
 import '../ImageBuild.dart';
 import '../Library/BookDetails.dart';
+import '../Search/SearchScreen.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   static const String routeName = 'home';
@@ -37,9 +38,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
   final List<String> sentence = [
     'Explore the world \nthrough book',
-    'Explore the world \nthrough book',
-    'Explore the world \nthrough book',
+    'Open a book,\nopen your mind',
+    'Every page takes \nyou to a new \nadventure',
   ];
+
+
 
   @override
   void initState() {
@@ -140,6 +143,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
                       /// ---------- SEARCH ----------
                       TextField(
+                        readOnly: true, // ده مهم عشان ميقدرش يكتب هنا
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SearchScreen(),
+                            ),
+                          );
+                        },
                         decoration: InputDecoration(
                           hintText: "Tap to search...",
                           hintStyle: TextStyle(
@@ -240,7 +251,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                           }
                         },
                         builder: (context, state) {
-                          if (state is BookLoadingState) {
+                          if (state is LoadingState) {
                             return Center(child: CircularProgressIndicator());
                           }
 

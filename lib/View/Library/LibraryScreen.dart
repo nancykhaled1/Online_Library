@@ -26,7 +26,6 @@ class _LibraryScreenState extends State<LibraryScreen>
     _tabController.addListener(() {
       setState(() {});
     });
-   // context.read<HomeScreenCubit>().loadHomeData();
   }
 
   @override
@@ -44,49 +43,6 @@ class _LibraryScreenState extends State<LibraryScreen>
               padding:  EdgeInsets.symmetric(horizontal: 14.w,vertical: 10.h),
               child: Column(
                 children: [
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     // const Text(
-                  //     //   "Baca",
-                  //     //   style: TextStyle(
-                  //     //     fontSize: 22,
-                  //     //     fontWeight: FontWeight.bold,
-                  //     //     color: Colors.black,
-                  //     //   ),
-                  //     // ),
-                  //     // Tabs هنا
-                  //     Expanded(
-                  //       child: TabBar(
-                  //         controller: _tabController,
-                  //         isScrollable: true,
-                  //         indicatorColor: MyColors.blackColor,
-                  //         dividerColor: Colors.transparent,
-                  //         labelColor: MyColors.blackColor,
-                  //         unselectedLabelColor: MyColors.greyColor,
-                  //         labelStyle: TextStyle(
-                  //             fontSize: 16.sp, fontWeight: FontWeight.w600
-                  //         ),
-                  //         unselectedLabelStyle: TextStyle(
-                  //             fontSize: 16.sp, fontWeight: FontWeight.normal),
-                  //         // padding: EdgeInsets.only(left: 20.w),
-                  //         labelPadding:
-                  //         EdgeInsets.symmetric(horizontal: 10.w),
-                  //         tabs: const [
-                  //           Tab(text: "Books"),
-                  //           Tab(text: "Novel"),
-                  //           Tab(text: "Comic"),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     SvgPicture.asset('assets/images/notification-bing.svg',
-                  //       height: 20.h,
-                  //       width: 25.w,
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: 16.h),
-
                   TextField(
                     readOnly: true, // ده مهم عشان ميقدرش يكتب هنا
                     onTap: () {

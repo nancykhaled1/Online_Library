@@ -43,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
-                              HomeScreen(initialIndex: 1,),
+                              HomeScreen(initialIndex: 0,),
                           transitionDuration: Duration.zero,
                           reverseTransitionDuration: Duration.zero,
                         ),

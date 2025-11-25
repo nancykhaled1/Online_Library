@@ -124,22 +124,28 @@ class Reviews {
 class UserId {
   UserId({
       this.id, 
-      this.name, 
+      this.name,
+    this.photo
       });
 
   UserId.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
     id = json['id'];
+    photo = json['photo'];
+
   }
   String? id;
   String? name;
+  String? photo;
 
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['_id'] = id;
     map['name'] = name;
+    map['photo'] = photo;
+
 
     return map;
   }

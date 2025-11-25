@@ -12,8 +12,7 @@ import '../../Utils/MyColors.dart';
 import '../../Utils/dialog.dart';
 
 void showAllReviewsSheet(BuildContext context, String bookId) {
-  //context.read<ReviewCubit>().getBookReview(bookId); // ⬅️ هنا
-  bool isWritingReview = false; // لو true → يعرض الفورم بدل الليست
+  bool isWritingReview = false;
   int selectedRating = 0;
   TextEditingController reviewController = TextEditingController();
 
@@ -76,13 +75,30 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                     /// زرار Write review
                     if (!isWritingReview)
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MyColors.primaryColor,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10.h,
+                            horizontal: 16.w,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50.r),
+                          ),
+                        ),
                         onPressed: () {
                           setState(() {
                             isWritingReview = true; // اظهار فورم الريفيو
                           });
                         },
                         child: Row(
-                          children: [Icon(Icons.edit), Text("Write a review")],
+                          children: [Icon(Icons.edit,color: MyColors.whiteColor,),
+                            SizedBox(width: 5.w,),
+                            Text("Write a review",
+                              style: TextStyle(
+                                color: MyColors.whiteColor
+                              ),
+
+                            )],
                         ),
                       ),
                   ],
@@ -189,7 +205,6 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
 
                       else if (state is ErrorState){
                         showOverlayMessage(context, state.errorMessage!, isError: true);
-
                       }
 
                       if (state is GetReviewSuccessState) {
@@ -288,6 +303,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                   final formattedTime = DateFormat(
                                     'HH:mm',
                                   ).format(parsedDate);
+                                  String? imageUrl = review.userId?.photo;
                                   return Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 16.w,
@@ -297,9 +313,40 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                       CrossAxisAlignment.start,
                                       children: [
                                         Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
                                           children: [
+                                            CircleAvatar(
+                                              radius: 15.r,
+                                              backgroundColor: MyColors.whiteColor,
+                                              child: ClipOval(
+                                                child: imageUrl != null && imageUrl.isNotEmpty
+                                                    ? Image.network(
+                                                  "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                                                  key: UniqueKey(),
+                                                  fit: BoxFit.cover,
+                                                  width: 100.w,
+                                                  height: 100.h,
+                                                  loadingBuilder: (context, child, loadingProgress) {
+                                                    if (loadingProgress == null) return child;
+                                                    return const Center(
+                                                      child: CircularProgressIndicator(),
+                                                    );
+                                                  },
+                                                  errorBuilder: (context, error, stackTrace) =>
+                                                      Image.asset('assets/images/personalImage.png',
+                                                          fit: BoxFit.fill,
+                                                          width: 100.w,
+                                                          height: 100.h
+                                                      ),
+                                                )
+                                                    : Image.asset(
+                                                  'assets/images/personalImage.png',
+                                                  fit: BoxFit.cover,
+                                                  width: 100.w,
+                                                  height: 100.h,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10.w,),
                                             Text(
                                               review.userId?.name ??'Anonymous',
                                               style: TextStyle(
@@ -307,6 +354,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                                 fontSize: 14.sp,
                                               ),
                                             ),
+                                            Spacer(),
                                             Container(
                                               padding: EdgeInsets.symmetric(
                                                 vertical: 5.h,

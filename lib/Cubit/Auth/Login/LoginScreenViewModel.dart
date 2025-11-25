@@ -21,7 +21,6 @@ class LoginScreenCubit extends Cubit<States> {
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = true;
-  bool isChecked = false;
 
   Future<void> login() async {
     if (formKey.currentState!.validate()) {
@@ -64,6 +63,14 @@ class LoginScreenCubit extends Cubit<States> {
         },
       );
     }
+  }
+
+  void clearForm() {
+    emailController.clear();
+    passwordController.clear();
+    isPasswordVisible = true;
+
+    emit(InitialState());
   }
 }
 

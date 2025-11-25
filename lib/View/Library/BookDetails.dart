@@ -11,6 +11,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/Home/ReviewViewModel.dart';
 import '../../Cubit/MyShelf/SaveListViewModel.dart';
+import '../../Cubit/Profile/ProfileViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Models/Requests/SaveBookRequest.dart';
 import '../../Utils/MyColors.dart';
@@ -39,7 +40,6 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
 
     context.read<HomeScreenCubit>().getBookDetails(widget.bookId);
     context.read<ReviewCubit>().getBookReview(widget.bookId);
-   // context.read<SaveListCubit>().saveBook(widget.bookId);
 
 
   }
@@ -267,13 +267,6 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                               color: MyColors.blackColor,
                             ),
                           ),
-                          Text(
-                            "01 mostly good",
-                            style: TextStyle(
-                              color: MyColors.greyColor,
-                              fontSize: 13.sp,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -318,6 +311,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                 final formattedTime = DateFormat(
                                   'HH:mm',
                                 ).format(parsedDate);
+                               // final cubit = context.read<ProfileViewModel>();
+                                String? imageUrl = review.userId?.photo;
                                 return Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 16.w,
@@ -327,9 +322,42 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                      //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
+
+                                          CircleAvatar(
+                                            radius: 15.r,
+                                            backgroundColor: MyColors.whiteColor,
+                                            child: ClipOval(
+                                              child: imageUrl != null && imageUrl.isNotEmpty
+                                                  ? Image.network(
+                                                "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                                                key: UniqueKey(),
+                                                fit: BoxFit.cover,
+                                                width: 100.w,
+                                                height: 100.h,
+                                                loadingBuilder: (context, child, loadingProgress) {
+                                                  if (loadingProgress == null) return child;
+                                                  return const Center(
+                                                    child: CircularProgressIndicator(),
+                                                  );
+                                                },
+                                                errorBuilder: (context, error, stackTrace) =>
+                                                    Image.asset('assets/images/personalImage.png',
+                                                        fit: BoxFit.fill,
+                                                        width: 100.w,
+                                                        height: 100.h
+                                                    ),
+                                              )
+                                                  : Image.asset(
+                                                'assets/images/personalImage.png',
+                                                fit: BoxFit.cover,
+                                                width: 100.w,
+                                                height: 100.h,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 10.w,),
                                           Text(
                                             review.userId?.name ?? 'Anonymous',
                                             style: TextStyle(
@@ -337,6 +365,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                               fontSize: 14.sp,
                                             ),
                                           ),
+                                          Spacer(),
                                           Container(
                                             padding: EdgeInsets.symmetric(
                                               vertical: 5.h,
@@ -581,7 +610,9 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
           );
         }
 
-        return Center(child: Text("No Data"));
+        return Scaffold(
+          backgroundColor: MyColors.whiteColor,
+            body: Center(child: Text("No Data")));
       },
     );
   }
@@ -620,4 +651,20 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
       ),
     );
   }
+
+  Widget buildUserPhoto(String? url) {
+    if (url == null || url.isEmpty) {
+      return CircleAvatar(
+        radius: 22,
+        backgroundImage: AssetImage("assets/images/user.png"),
+      );
+    }
+
+    return CircleAvatar(
+      radius: 22,
+      backgroundImage: NetworkImage(url),
+      onBackgroundImageError: (_, __) {},
+    );
+  }
+
 }
