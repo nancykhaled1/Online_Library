@@ -1,11 +1,4 @@
-
-
-
-
-
-
-
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,13 +8,16 @@ import 'package:online_library_app/Cubit/Home/CategoryViewModel.dart';
 import 'package:online_library_app/Cubit/Home/ReviewViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/MyShelf/SaveListViewModel.dart';
+import 'package:online_library_app/Cubit/Notification/NotificationViewModel.dart';
 import 'package:online_library_app/Cubit/Profile/ProfileViewModel.dart';
 import 'package:online_library_app/Cubit/Search/SearchScreenViewModel.dart';
 import 'package:online_library_app/Repositories/BorrowRepository.dart';
+import 'package:online_library_app/Repositories/NotificationRepository.dart';
 import 'package:online_library_app/Repositories/ReturnRepository.dart';
 import 'package:online_library_app/Repositories/SaveBookRepository.dart';
 import 'package:online_library_app/Repositories/SearchRepository.dart';
 import 'package:online_library_app/Sources/BorrowDataSource.dart';
+import 'package:online_library_app/Sources/NotificationDataSource.dart';
 import 'package:online_library_app/Sources/ProfiledataSource.dart';
 import 'package:online_library_app/Sources/ReturnDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
@@ -36,10 +32,15 @@ import 'Cubit/Auth/Register/RegisterViewModel.dart';
 import 'Cubit/Auth/Register/VerifyemailViewModel.dart';
 import 'Cubit/Home/HomeScreenViewModel.dart';
 import 'Cubit/MyShelf/ReturnViewModel.dart';
+import 'Cubit/Notification/GetNotificationViewModel.dart';
+import 'Cubit/Notification/NotificationDetailsViewModel.dart';
 import 'Repositories/AllCategoriesRepository.dart';
 import 'Repositories/ChangePasswordRepository.dart';
+import 'Repositories/CounterRepository.dart';
+import 'Repositories/GetNotificationRepository.dart';
 import 'Repositories/GoogleRepository.dart';
 import 'Repositories/LoginRepository.dart';
+import 'Repositories/NotificationDetailsRepository.dart';
 import 'Repositories/ProfileRepository.dart';
 import 'Repositories/RegisterRepository.dart';
 import 'Repositories/ResetPasswordRepository.dart';
@@ -48,12 +49,15 @@ import 'Repositories/VerifyEmailRepository.dart';
 import 'Services/Remote/ApiManager.dart';
 import 'Sources/AllCategoriesDataSource.dart';
 import 'Sources/ChangePasswordDataSource.dart';
+import 'Sources/CounterDataSource.dart';
 import 'Sources/GoogleDataSource.dart';
 import 'Sources/LoginDataSource.dart';
+import 'Sources/NotificationDetailsDataSource.dart';
 import 'Sources/RegisterDataSource.dart';
 import 'Sources/ResetPasswordDataSource.dart';
 import 'Sources/SendEmailDataSource.dart';
 import 'Sources/VerifyEmailDataSource.dart';
+import 'Sources/getNotificationDataSource.dart';
 import 'Utils/MyColors.dart';
 import 'View/Auth/Login/LoginScreen.dart';
 import 'View/Auth/Login/SendEmailScreen.dart';
@@ -61,7 +65,13 @@ import 'View/Auth/Register/RegisterScreen.dart';
 import 'View/Home/LibraryHomeScreen.dart';
 import 'View/Home/home.dart';
 
+
 Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+
   final apiManager = ApiManager();
   final registerRemoteDataSource = RegisterRemoteDataSource(apiManager );
   final registerRepository = RegisterRepository(registerRemoteDataSource);
@@ -114,6 +124,20 @@ Future<void> main() async {
   //profile
   final profileDataSource = ProfileDataSource(apiManager);
   final profile = ProfileRepository(profileDataSource);
+
+  //fcm
+  final notificationDataSource = NotificationRemoteDataSource(apiManager);
+  final notification = NotificationRepository(notificationDataSource);
+
+  final getNotificationDataSource = GetNotificationRemoteDataSource(apiManager);
+  final getnotification = GetNotificationRepository(getNotificationDataSource);
+
+  final NotificationDataSource = NotificationDetailsRemoteDataSource(apiManager);
+  final notificationDetails = NotificationDetailsRepository(NotificationDataSource);
+
+  // Counter repo
+  final counterRepository = CounterRemoteDataSource(apiManager);
+  final counter = CounterRepository(counterRepository);
 
   runApp(
 
@@ -173,6 +197,19 @@ Future<void> main() async {
           create: (context) => profile,
         ),
 
+        RepositoryProvider<NotificationRepository>(
+          create: (context) => notification,
+        ),
+        RepositoryProvider<GetNotificationRepository>(
+          create: (context) => getnotification,
+        ),
+
+        RepositoryProvider<NotificationDetailsRepository>(
+          create: (context) => notificationDetails,
+        ),
+        RepositoryProvider<CounterRepository>(
+          create: (context) => counter,
+        ),
 
 
       ],
@@ -278,7 +315,24 @@ Future<void> main() async {
             ),
           ),
 
+          BlocProvider(
+            create: (context) => NotificationCubit(
+              context.read<NotificationRepository>(),
+            ),
+          ),
 
+          BlocProvider(
+            create: (context) => NotificationScreenViewModel(
+              context.read<GetNotificationRepository>(),
+            ),
+          ),
+
+          BlocProvider(
+            create: (context) => NotificationDetailsViewModel(
+              context.read<NotificationDetailsRepository>(),
+              context.read<CounterRepository>(),
+            ),
+          ),
         ],
         child: const MyApp(),
       ),

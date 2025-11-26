@@ -34,17 +34,25 @@ class ApiConstants{
 
   static const String profileApi = "/api/user/profile";
 
+  static const String fcmTokenApi = "/api/user/auth/local/fcm-token";
+
+  static const String getNotificationApi = "/api/user/notification";
+
+  static const String counterApi = "/api/user/notification/unread-count";
 
 
 
 
-  static const String attemptApi = "/api/user/exam/attempt/start";
 
-  static const String saveAnsApi = "/api/user/exam/attempt/save-answer";
 
-  static const String submitApi = "/api/user/exam/attempt/submit";
 
-  static const String myAttemptApi = "/api/user/exam/attempts";
+
+
+
+
+
+
+
 
 
 

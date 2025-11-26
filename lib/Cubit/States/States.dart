@@ -14,10 +14,14 @@ import '../../Models/Responses/AllCategoriesResponse.dart';
 import '../../Models/Responses/AllSavedBooksResponse.dart';
 import '../../Models/Responses/BookByIdResponse.dart';
 import '../../Models/Responses/ChangePaswwordResponse.dart';
+import '../../Models/Responses/CounterResponse.dart';
 import '../../Models/Responses/DeleteProfileResponse.dart';
 import '../../Models/Responses/GetBorrowResponse.dart';
+import '../../Models/Responses/GetNotificationResponse.dart';
 import '../../Models/Responses/GoogleResponse.dart';
 import '../../Models/Responses/LoginResponse.dart';
+import '../../Models/Responses/NotificationDetailsResponse.dart';
+import '../../Models/Responses/NotificationResponse.dart';
 import '../../Models/Responses/ProfileResponse.dart';
 import '../../Models/Responses/RegisterResponse.dart';
 import '../../Models/Responses/RemoveSavedBook.dart';
@@ -209,5 +213,29 @@ class ChangeEditState extends States {}
 class DeleteProfileSuccessState extends States {
   final DeleteProfileResponse response;
   DeleteProfileSuccessState(this.response);
+}
+
+class NotificationSuccessState extends States {
+  final NotificationResponse response;
+
+  NotificationSuccessState({required this.response});
+}
+
+class GetNotificationSuccessState extends States {
+  final List<Notifications> notifications;
+
+  GetNotificationSuccessState({required this.notifications});
+}
+
+class NotificationDetailsSuccessState extends States {
+  final DataDetails notificationDetails;
+
+  NotificationDetailsSuccessState({required this.notificationDetails});
+}
+
+class CounterSuccessState extends States {
+  final CounterData counterData;
+
+  CounterSuccessState({required this.counterData});
 }
 

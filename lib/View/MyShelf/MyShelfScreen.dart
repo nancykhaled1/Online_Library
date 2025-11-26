@@ -134,6 +134,43 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
           if (state is LoadingState) {
             return Center(child: CircularProgressIndicator());
           }
+          else if (state is ErrorState) {
+            final error = state.errorMessage;
+
+            if (error == "No Internet Connection") {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "No internet connection",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: MyColors.greyColor,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Noto Kufi Arabic",
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "Please, Try again later",
+                  style: TextStyle(
+                    color: MyColors.greyColor,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              );
+            }
+
+          }
           else if (state is AllSaveBookSuccessState) {
             final saved = state.favorite;
             if (saved.isEmpty) {
@@ -250,6 +287,43 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
         builder: (context,state){
           if (state is LoadingState) {
             return Center(child: CircularProgressIndicator());
+          }
+          else if (state is ErrorState) {
+            final error = state.errorMessage;
+
+            if (error == "No Internet Connection") {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "No internet connection",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: MyColors.greyColor,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Noto Kufi Arabic",
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "Please, Try again later",
+                  style: TextStyle(
+                    color: MyColors.greyColor,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              );
+            }
+
           }
           else if (state is GetBorrowBooksSuccessState) {
             final borrow = state.borrow;
@@ -401,6 +475,43 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
         builder: (context,state){
           if (state is LoadingState) {
             return Center(child: CircularProgressIndicator());
+          }
+          else if (state is ErrorState) {
+            final error = state.errorMessage;
+
+            if (error == "No Internet Connection") {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "No internet connection",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: MyColors.greyColor,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Noto Kufi Arabic",
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "Please, Try again later",
+                  style: TextStyle(
+                    color: MyColors.greyColor,
+                    fontSize: 16.sp,
+                  ),
+                ),
+              );
+            }
+
           }
           else if (state is GetBorrowBooksSuccessState) {
             final returned = state.returned;

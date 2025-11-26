@@ -78,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // return true;  ✅ هيرجع
           },
           child: Scaffold(
-            backgroundColor: const Color(0xFFF9FAFB),
+            backgroundColor: MyColors.whiteColor,
             body: SafeArea(
               child: SingleChildScrollView(
                 padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 40.h),
@@ -275,19 +275,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               child:
-                              state is LoadingState
-                                  ? SizedBox(
-                                width: 50.w,
-                                height: 20.w,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                    MyColors.whiteColor,
-                                  ),
-                                ),
-                              )
-                                  : Row(
+                              // state is LoadingState
+                              //     ? SizedBox(
+                              //   width: 50.w,
+                              //   height: 20.w,
+                              //   child: CircularProgressIndicator(
+                              //     strokeWidth: 2,
+                              //     valueColor:
+                              //     AlwaysStoppedAnimation<Color>(
+                              //       MyColors.whiteColor,
+                              //     ),
+                              //   ),
+                              // )
+                              //     :
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(

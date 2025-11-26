@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/View/Auth/Login/LoginScreen.dart';
 
 
 import '../../../Cubit/Auth/Login/forget_passViewModel.dart';
@@ -44,9 +45,23 @@ class SendEmailScreen extends StatelessWidget{
           child: SafeArea(child: Scaffold(
               backgroundColor: MyColors.whiteColor,
               appBar: AppBar(
-                backgroundColor: MyColors.whiteColor ,
+                backgroundColor: MyColors.whiteColor,
                 elevation: 0,
                 scrolledUnderElevation: 0,
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                            LoginScreen(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.arrow_back),
+                ),
               ),
               body: SingleChildScrollView(
                 padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),

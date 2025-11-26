@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/View/Auth/Register/RegisterScreen.dart';
 
 import '../../../Cubit/Auth/Register/VerifyemailViewModel.dart';
 import '../../../Cubit/States/States.dart';
@@ -21,7 +24,42 @@ class VerifyEmail extends StatefulWidget {
 
 class _VerifyEmailState extends State<VerifyEmail> {
 
+  int totalSeconds = 60;
+  Timer? timer;
+  bool canResend = false;
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
+      if (totalSeconds == 0) {
+        t.cancel();
+        setState(() {
+          canResend = true;   // 🔥 إظهار زر resend
+        });
+      } else {
+        setState(() {
+          totalSeconds--;
+        });
+      }
+    });
+
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  String formatTime(int seconds) {
+    int h = seconds ~/ 3600;
+    int m = (seconds % 3600) ~/ 60;
+    int s = seconds % 60;
+    return "${h.toString().padLeft(2, '0')} : ${m.toString().padLeft(2, '0')} : ${s.toString().padLeft(2, '0')}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +82,25 @@ class _VerifyEmailState extends State<VerifyEmail> {
         return SafeArea(
           child: Scaffold(
             backgroundColor: MyColors.whiteColor,
-            // appBar: AppBar(
-            //   leading: GestureDetector(
-            //       onTap: (){
-            //         Navigator.pop(context);
-            //       },
-            //       child: Icon(Icons.arrow_back)),
-            //   scrolledUnderElevation: 0,
-            //   elevation: 0,
-            //   backgroundColor: MyColors.whiteColor,
-            //
-            // ),
+            appBar: AppBar(
+              backgroundColor: MyColors.whiteColor,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    PageRouteBuilder(
+                      pageBuilder:
+                          (context, animation, secondaryAnimation) =>
+                          RegisterScreen(),
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.arrow_back),
+              ),
+            ),
             body: SingleChildScrollView(
               padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
               child: WillPopScope(
@@ -169,21 +215,61 @@ class _VerifyEmailState extends State<VerifyEmail> {
                         Text(
                           'Have a problem ? ',
                           style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: MyColors.greyColor
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            color: MyColors.greyColor,
                           ),
                         ),
-                        Text(
-                          '44:4',
-                          style: TextStyle(
+
+                        /// لو الوقت لسه شغال → اعرض العداد
+                        /// لو خلص → اعرض زر Resend
+                        canResend
+                            ? GestureDetector(
+                          onTap: () {
+                            /// 1) إرسال الكود من جديد
+                            viewModel.verifyEmail(userId: widget.userId, code: viewModel.getEnteredCode());
+
+                            /// 2) إعادة ضبط العداد
+                            setState(() {
+                              totalSeconds = 60;
+                              canResend = false;
+                            });
+
+                            /// 3) إعادة تشغيل التايمر
+                            timer = Timer.periodic(Duration(seconds: 1), (t) {
+                              if (totalSeconds == 0) {
+                                t.cancel();
+                                setState(() {
+                                  canResend = true;
+                                });
+                              } else {
+                                setState(() {
+                                  totalSeconds--;
+                                });
+                              }
+                            });
+                          },
+                          child: Text(
+                            "Resend",
+                            style: TextStyle(
                               fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: MyColors.primaryColor
+                              fontWeight: FontWeight.w600,
+                              color: MyColors.primaryColor,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        )
+                            : Text(
+                          formatTime(totalSeconds),
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            color: MyColors.primaryColor,
                           ),
                         ),
                       ],
                     ),
+
 
                     SizedBox(height: 50.h),
 

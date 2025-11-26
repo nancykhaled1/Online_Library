@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, state) {
         final viewModel = context.read<LoginScreenCubit>();
         return Scaffold(
-          backgroundColor: const Color(0xFFF9FAFB),
+          backgroundColor: MyColors.whiteColor,
           body: SafeArea(
             child: SingleChildScrollView(
               padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 40.h),
@@ -223,19 +223,24 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child:
-                            state is LoadingState
-                                ? SizedBox(
-                              width: 50.w,
-                              height: 20.w,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                AlwaysStoppedAnimation<Color>(
-                                  MyColors.whiteColor,
-                                ),
-                              ),
-                            )
-                                :
+                            // state is LoadingState
+                            //     ? SizedBox(
+                            //   width: 20.w,
+                            //   height: 20.w,
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     children: [
+                            //       CircularProgressIndicator(
+                            //         strokeWidth: 2,
+                            //         valueColor:
+                            //         AlwaysStoppedAnimation<Color>(
+                            //           MyColors.whiteColor,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // )
+                            //     :
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

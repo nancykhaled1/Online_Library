@@ -1,8 +1,12 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:online_library_app/View/Search/SearchScreen.dart';
 
+import '../../Cubit/Notification/NotificationViewModel.dart';
+import '../../Services/Local/SharedPreference.dart';
 import '../../Utils/MyColors.dart';
 import '../Library/LibraryScreen.dart';
 import '../MyShelf/MyShelfScreen.dart';
@@ -42,6 +46,43 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    _initNotifications();
+  }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initNotifications();
+  //  // context.read<NotificationDetailsViewModel>().getCounter();
+  //  // _loadUserId();
+  //   // _initChat();
+  // }
+  //
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // هيتنفذ كل مرة ترجع للشاشة
+   // context.read<NotificationDetailsViewModel>().getCounter();
+  }
+
+  Future<void> _initNotifications() async {
+    // NotificationPermissionHelper.requestNotificationPermission(context);
+    final enabled = await TokenStorage.getNotificationPreference(); // من sharedPreference
+    if (!enabled) {
+      print("🔕 Notifications are disabled by user.");
+      return;
+    }
+
+    context.read<NotificationCubit>().getFcmToken();
+    context.read<NotificationCubit>().sendFcmToken();
+    context.read<NotificationCubit>().listenToMessages();
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission();
+    print("🔔 Permission status: ${settings.authorizationStatus}");
+
+
   }
 
   @override

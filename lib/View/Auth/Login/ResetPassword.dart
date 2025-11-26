@@ -58,11 +58,11 @@ class _ResetPasswordState extends State<ResetPassword> {
       },
       child: SafeArea(child: Scaffold(
           backgroundColor: MyColors.whiteColor,
-          appBar: AppBar(
-            backgroundColor: MyColors.whiteColor ,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-          ),
+          // appBar: AppBar(
+          //   backgroundColor: MyColors.whiteColor ,
+          //   elevation: 0,
+          //   scrolledUnderElevation: 0,
+          // ),
           body: SingleChildScrollView(
             padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
             child: Column(

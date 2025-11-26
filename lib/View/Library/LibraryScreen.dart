@@ -34,7 +34,8 @@ class _LibraryScreenState extends State<LibraryScreen>
       builder: (context, state) {
         if (state is LoadingState) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is HomeDataSuccessState) {
+        }
+        else if (state is HomeDataSuccessState) {
           final books = state.books;
           return SafeArea(child: Scaffold(
             backgroundColor: MyColors.whiteColor,
@@ -190,9 +191,45 @@ class _LibraryScreenState extends State<LibraryScreen>
               ),
             ),
           ));
-        } else if (state is ErrorState) {
-          return Center(child: Text(state.errorMessage ?? 'Error'));
-        } else {
+        }
+        else if (state is ErrorState) {
+          final error = state.errorMessage;
+
+          if (error == "No Internet Connection") {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                  width: 200,
+                  height: 200,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "No internet connection",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: MyColors.greyColor,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Noto Kufi Arabic",
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Center(
+              child: Text(
+                "Please, Try again later",
+                style: TextStyle(
+                  color: MyColors.greyColor,
+                  fontSize: 16.sp,
+                ),
+              ),
+            );
+          }
+
+        }
+        else {
           return Container();
         }
       },

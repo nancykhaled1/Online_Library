@@ -27,7 +27,7 @@ class AccountSettings extends StatelessWidget{
         title:  Text('Account Settings',
           style: TextStyle(
             fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
+            fontSize: 20.sp,
             color: MyColors.blackColor,
           ),
         ),

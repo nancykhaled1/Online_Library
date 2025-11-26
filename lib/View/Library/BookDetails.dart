@@ -54,6 +54,43 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
+        else if (state is ErrorState) {
+          final error = state.errorMessage;
+
+          if (error == "No Internet Connection") {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                  width: 200,
+                  height: 200,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "No internet connection",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: MyColors.greyColor,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Noto Kufi Arabic",
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Center(
+              child: Text(
+                "Please, Try again later",
+                style: TextStyle(
+                  color: MyColors.greyColor,
+                  fontSize: 16.sp,
+                ),
+              ),
+            );
+          }
+
+        }
         if (state is BookDetailsSuccessState) {
           final book = state.book;
 
@@ -276,8 +313,44 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                         if (state is LoadingState) {
                           return Center(child: CircularProgressIndicator());
                         }
+                        else if (state is ErrorState) {
+                          final error = state.errorMessage;
 
-                        if (state is GetReviewSuccessState) {
+                          if (error == "No Internet Connection") {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                                  width: 200,
+                                  height: 200,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  "No internet connection",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: MyColors.greyColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Noto Kufi Arabic",
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Center(
+                              child: Text(
+                                "Please, Try again later",
+                                style: TextStyle(
+                                  color: MyColors.greyColor,
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                            );
+                          }
+
+                        }
+                        else if (state is GetReviewSuccessState) {
                           final reviews =
                               state.review; // الريفيوهات الجاية من الـ API
                           if (reviews.isEmpty) {

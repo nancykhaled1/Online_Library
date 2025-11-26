@@ -41,7 +41,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         'Personal Details',
         style: TextStyle(
           fontWeight: FontWeight.w700,
-          fontSize: 16.sp,
+          fontSize: 20.sp,
           color: MyColors.blackColor,
         ),
       ),

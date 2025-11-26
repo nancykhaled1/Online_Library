@@ -12,6 +12,7 @@ import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
 import '../ImageBuild.dart';
 import '../Library/BookDetails.dart';
+import '../Notification/notification_screen.dart';
 import '../Search/SearchScreen.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
   final PageController pageController = PageController();
 
   final List<String> images = [
-    'assets/images/slider2.svg',
+    'assets/images/book-lovers.svg',
     'assets/images/slider2.svg',
     'assets/images/slider3.svg',
   ];
@@ -96,8 +97,45 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
               if (state is LoadingState) {
                 return Center(child: CircularProgressIndicator());
               }
+              else if (state is ErrorState) {
+                final error = state.errorMessage;
 
-              if (state is HomeDataSuccessState) {
+                if (error == "No Internet Connection") {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                        width: 200,
+                        height: 200,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "No internet connection",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: MyColors.greyColor,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Noto Kufi Arabic",
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: Text(
+                      "Please, Try again later",
+                      style: TextStyle(
+                        color: MyColors.greyColor,
+                        fontSize: 16.sp,
+                      ),
+                    ),
+                  );
+                }
+
+              }
+
+              else if (state is HomeDataSuccessState) {
                 final parents = state.parents;
 
                 if (_tabController == null) return SizedBox();
@@ -131,10 +169,21 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                   .toList(),
                             ),
                           ),
-                          SvgPicture.asset(
-                            'assets/images/notification-bing.svg',
-                            height: 20.h,
-                            width: 25.w,
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => NotificationScreen(),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
+                              );
+                            },
+                            child: SvgPicture.asset(
+                              'assets/images/notification-bing.svg',
+                              height: 20.h,
+                              width: 25.w,
+                            ),
                           ),
                         ],
                       ),
@@ -405,13 +454,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                                           child: ClipRRect(
                                             borderRadius:
                                             BorderRadius.circular(12.r),
-                                            child:  buildImage(book.mainImage)
-
-
-                                            // Image.network(
-                                            //   book.mainImage ?? '',
-                                            //   fit: BoxFit.cover,
-                                            // ),
+                                            child:  Image.network(book.mainImage ??'assets/images/book.png',
+                                              height: 200.h,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Image.asset("assets/images/book.png", height: 180.h,);
+                                              },
+                                            ),
                                           ),
                                         ),
                                         Padding(
