@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../Cubit/Auth/Register/GoogleViewModel.dart';
 import '../../../Cubit/Auth/Register/RegisterViewModel.dart';
 import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
 import '../../../Utils/SuccessSheet.dart';
 import '../../../Utils/TextField.dart';
 import '../../../Utils/dialog.dart';
+import '../../Home/home.dart';
 import '../Login/LoginScreen.dart';
 import 'VerifyEmail.dart';
 
@@ -32,13 +34,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     registerCubit = context.read<RegisterCubit>();
   }
 
-  @override
-  void dispose() {
-    registerCubit.clearForm();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   registerCubit.clearForm();
+  //   super.dispose();
+  // }
 
 
+  final _formKey = GlobalKey<FormState>();
 
 
 
@@ -58,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             state.response.data!.message!,
             isError: false,
           );
-          showSuccessBottomSheet(context);
+
           final userId = state.response.data?.userId; // استبدل بالاسم المناسب
           Navigator.push(
             context,
@@ -81,30 +84,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             backgroundColor: MyColors.whiteColor,
             body: SafeArea(
               child: SingleChildScrollView(
-                padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 40.h),
+                padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 🔹 Logo & App name
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Color(0xFF3B82F6),
-                          child: Icon(Icons.menu_book_rounded,
-                              color: Colors.white, size: 20),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Baca",
-                          style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Center(
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        width: 150.w,
+                        height: 150.h,
+                      ),
                     ),
 
-                    SizedBox(height: 40.h),
+
 
 
 
@@ -130,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(height: 40.h),
 
                     Form(
-                      key: viewModel.formKey,
+                      key:_formKey,
                       child: Column(
                           children: [
                             // name
@@ -258,11 +251,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                             // 🔹 Login button
                             ElevatedButton(
-                              onPressed:
-                              state is LoadingState
-                                  ? null // منع الضغط أثناء التحميل
+                              onPressed: state is LoadingState
+                                  ? null
                                   : () {
-                                viewModel.register();
+                                if (_formKey.currentState!.validate()) {
+                                  viewModel.register();
+                                } else {
+                                  showOverlayMessage(context, "Please complete the form", isError: true);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: MyColors.primaryColor,
@@ -314,40 +310,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(height: 16.h),
 
                     // 🔹 Google login button
-                    ElevatedButton(
-                      onPressed: (){
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: MyColors.whiteColor,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 12.h,
-                            horizontal: 16.w,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50.r),
-                          ),
-                          side: BorderSide(
-                              color: MyColors.greyColor
-                          )
-                        // elevation: 5,
-                        // shadowColor: MyColors.shadGreyColor,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset('assets/images/Google.svg'),
-                          SizedBox(width: 10.w),
-                          Text(
-                            "Register with Google",
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: MyColors.blackColor,
-                              fontWeight: FontWeight.w500,
+                    BlocConsumer<GoogleCubit, States>(
+                      listener: (context, state)  async {
+                        if (state is LoadingState) {
+                          showOverlayMessage(context, "Loading", isError: false);
+                        } else if (state is ErrorState) {
+                          state.errorMessage;
+                          showOverlayMessage(context, state.errorMessage!, isError: true);
+                        } else if (state is GoogleSuccessState) {
+                          showOverlayMessage(
+                              context, "Successfully login", isError: false);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
                             ),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: state is LoadingState
+                              ? null
+                              : () async {
+                            context.read<GoogleCubit>().signInWithGoogle(
+
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: MyColors.whiteColor,
+                              padding: EdgeInsets.symmetric(
+                                vertical: 12.h,
+                                horizontal: 16.w,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50.r),
+                              ),
+                              side: BorderSide(
+                                  color: MyColors.greyColor
+                              )
+                            // elevation: 5,
+                            // shadowColor: MyColors.shadGreyColor,
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset('assets/images/Google.svg'),
+                              SizedBox(width: 10.w),
+                              Text(
+                                "Login with Google",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: MyColors.blackColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 50.h),
 
@@ -364,9 +384,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacementNamed(
-                              context,
-                              LoginScreen.routeName,
+                            context.read<RegisterCubit>().clearForm();
+
+                            Navigator.of(context).pushReplacement(
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
+                                transitionDuration: Duration.zero,
+                                reverseTransitionDuration: Duration.zero,
+                              ),
                             );
                           },
                           child: Text(

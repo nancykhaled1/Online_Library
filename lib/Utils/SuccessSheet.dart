@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../View/Home/home.dart';
 import 'MyColors.dart';
 
 void showSuccessBottomSheet(BuildContext context) {
@@ -31,7 +32,7 @@ void showSuccessBottomSheet(BuildContext context) {
            //  SizedBox(height: 20.h),
 
             // 🔹 Illustration (تقدري تحطي صورة من النت أو asset)
-            SvgPicture.asset('assets/images/success.svg'),
+            Image.asset('assets/images/success.png'),
 
              SizedBox(height: 24.h),
 
@@ -66,8 +67,11 @@ void showSuccessBottomSheet(BuildContext context) {
              // height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                 // Navigator.pop(context); // يقفل الـ BottomSheet
-                },
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => HomeScreen()),
+                  );
+                  },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: MyColors.primaryColor,
                   padding: EdgeInsets.symmetric(

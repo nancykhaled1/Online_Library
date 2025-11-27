@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/View/Auth/Login/LoginScreen.dart';
 
 import '../../../Cubit/Auth/Login/SendCodeViewModel.dart';
 import '../../../Cubit/States/States.dart';
@@ -22,7 +23,15 @@ class SendCode extends StatefulWidget {
 
 class _SendCodeState extends State<SendCode> {
    String? code;
-
+   // late SendCodeCubit cubit;
+   //
+   //
+   //
+   // @override
+   // void dispose() {
+   //   cubit.clear();
+   //   super.dispose();
+   // }
 
 
   @override
@@ -37,6 +46,7 @@ class _SendCodeState extends State<SendCode> {
         }
         if (state is ResetPassSuccessState) {
           showOverlayMessage(context, state.response.data!.message!, isError: false);
+
           final code = context.read<SendCodeCubit>().getEnteredCode();
           print("CODE ENTERED: $code");
           // print("✅ Entered Code: $enteredCode");
@@ -56,19 +66,27 @@ class _SendCodeState extends State<SendCode> {
         return SafeArea(
           child: Scaffold(
             backgroundColor: MyColors.whiteColor,
-            // appBar: AppBar(
-            //   leading: GestureDetector(
-            //       onTap: (){
-            //         Navigator.pop(context);
-            //       },
-            //       child: Icon(Icons.arrow_back)),
-            //   scrolledUnderElevation: 0,
-            //   elevation: 0,
-            //   backgroundColor: MyColors.whiteColor,
-            //
-            // ),
+            appBar: AppBar(
+              backgroundColor: MyColors.whiteColor,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    PageRouteBuilder(
+                      pageBuilder:
+                          (context, animation, secondaryAnimation) =>
+                          LoginScreen(),
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.arrow_back),
+              ),
+            ),
             body: SingleChildScrollView(
-              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
+              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 0.h),
               child: WillPopScope(
                 onWillPop: () async {
                   // هنا بتتحكمى هل ترجعى ولا لا
@@ -78,27 +96,17 @@ class _SendCodeState extends State<SendCode> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Color(0xFF3B82F6),
-                          child: Icon(Icons.menu_book_rounded,
-                              color: Colors.white, size: 20),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Baca",
-                          style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Center(
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        width: 150.w,
+                        height: 150.h,
+                      ),
                     ),
+
 
                     // Center(
                     //     child: SvgPicture.asset('assets/images/code-pass.svg')),
-                    SizedBox(height: 60.h),
                     Text(
                       'Reset a password',
                       style: TextStyle(
@@ -176,28 +184,27 @@ class _SendCodeState extends State<SendCode> {
                       }),
                     ),
                     SizedBox(height: 20.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Have a problem ? ',
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: MyColors.greyColor
-                          ),
-                        ),
-                        Text(
-                          '44:4',
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: MyColors.primaryColor
-                          ),
-                        ),
-                      ],
-                    ),
-
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       'Have a problem ? ',
+                    //       style: TextStyle(
+                    //           fontSize: 14.sp,
+                    //           fontWeight: FontWeight.w500,
+                    //           color: MyColors.greyColor
+                    //       ),
+                    //     ),
+                    //     Text(
+                    //       '44:4',
+                    //       style: TextStyle(
+                    //           fontSize: 14.sp,
+                    //           fontWeight: FontWeight.w500,
+                    //           color: MyColors.primaryColor
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(height: 50.h),
 
                     /// Verify Button
@@ -208,7 +215,7 @@ class _SendCodeState extends State<SendCode> {
                         onPressed: (state is! LoadingState && viewModel.isCodeComplete)
                             ? () {
                           final code = viewModel.getEnteredCode();
-                         // viewModel.resetPassword(email: widget.email, code: code);
+                          viewModel.resetPassword(email: widget.email, code: code);
 
 
                         }
@@ -238,7 +245,7 @@ class _SendCodeState extends State<SendCode> {
                         )
                           :
                         Text(
-                          "ارسال الكود",
+                          "Send",
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontFamily: "Noto Kufi Arabic",

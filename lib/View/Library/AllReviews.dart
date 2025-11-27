@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 
 import '../../Cubit/Home/HomeScreenViewModel.dart';
@@ -10,6 +11,7 @@ import '../../Cubit/States/States.dart';
 import '../../Models/Requests/ReviewRequest.dart';
 import '../../Utils/MyColors.dart';
 import '../../Utils/dialog.dart';
+import 'image.dart';
 
 void showAllReviewsSheet(BuildContext context, String bookId) {
   bool isWritingReview = false;
@@ -352,25 +354,21 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                               radius: 15.r,
                                               backgroundColor: MyColors.whiteColor,
                                               child: ClipOval(
-                                                child: imageUrl != null && imageUrl.isNotEmpty
+                                                child: (review.userId?.photo != null && review.userId!.photo!.startsWith("http"))
                                                     ? Image.network(
-                                                  "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                                                  review.userId!.photo!,
                                                   key: UniqueKey(),
                                                   fit: BoxFit.cover,
                                                   width: 100.w,
                                                   height: 100.h,
-                                                  loadingBuilder: (context, child, loadingProgress) {
-                                                    if (loadingProgress == null) return child;
-                                                    return const Center(
-                                                      child: CircularProgressIndicator(),
+                                                  errorBuilder: (context, error, stackTrace) {
+                                                    return Image.asset(
+                                                      'assets/images/personalImage.png',
+                                                      fit: BoxFit.cover,
+                                                      width: 100.w,
+                                                      height: 100.h,
                                                     );
                                                   },
-                                                  errorBuilder: (context, error, stackTrace) =>
-                                                      Image.asset('assets/images/personalImage.png',
-                                                          fit: BoxFit.fill,
-                                                          width: 100.w,
-                                                          height: 100.h
-                                                      ),
                                                 )
                                                     : Image.asset(
                                                   'assets/images/personalImage.png',
@@ -380,6 +378,34 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                                 ),
                                               ),
                                             ),
+
+                                            // CircleAvatar(
+                                            //   radius: 15.r,
+                                            //   backgroundColor: MyColors.whiteColor,
+                                            //   child: ClipOval(
+                                            //     child: (imageUrl != null && imageUrl!.startsWith("http"))
+                                            //         ? Image.network(
+                                            //       "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                                            //       key: UniqueKey(),
+                                            //       fit: BoxFit.cover,
+                                            //       width: 100.w,
+                                            //       height: 100.h,
+                                            //       errorBuilder: (context, error, stackTrace) =>
+                                            //           Image.asset(
+                                            //             'assets/images/personalImage.png',
+                                            //             fit: BoxFit.cover,
+                                            //             width: 100.w,
+                                            //             height: 100.h,
+                                            //           ),
+                                            //     )
+                                            //         : Image.asset(
+                                            //       'assets/images/personalImage.png',
+                                            //       fit: BoxFit.cover,
+                                            //       width: 100.w,
+                                            //       height: 100.h,
+                                            //     ),
+                                            //   ),
+                                            // ),
                                             SizedBox(width: 10.w,),
                                             Text(
                                               review.userId?.name ??'Anonymous',

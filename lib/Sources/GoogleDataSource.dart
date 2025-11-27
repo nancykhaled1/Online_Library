@@ -14,6 +14,6 @@ class GoogleDataSource {
 
   Future<Either<LoginError, GoogleResponse>> google(
       GoogleLoginRequest request) {
-    return apiManager.googleLogin(request.idToken , request.role);
+    return apiManager.googleLogin(request.token);
   }
 }

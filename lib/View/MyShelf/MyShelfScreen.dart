@@ -353,7 +353,7 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
               itemBuilder: (context, index) {
                 final borrowBook = borrow[index];
                 final parsedDate =
-                DateTime.parse(borrowBook.createdAt!).toLocal();
+                DateTime.parse(borrowBook.mustReturnDate!).toLocal();
                 final formattedDate = DateFormat(
                   'dd/MM',
                 ).format(parsedDate);

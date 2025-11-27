@@ -18,8 +18,7 @@ class RegisterCubit extends Cubit<States> {
   RegisterCubit(this.repository) : super(InitialState());
 
 
-  var formKey = GlobalKey<FormState>();
-  var profileFormKey = GlobalKey<FormState>();
+  var registerFormKey = GlobalKey<FormState>();
 
 
   TextEditingController passwordController = TextEditingController();
@@ -39,7 +38,7 @@ class RegisterCubit extends Cubit<States> {
 
 
   Future<void> register() async {
-    if (!formKey.currentState!.validate()) return;
+   // if (registerFormKey.currentState!.validate()) return;
 
     emit(LoadingState(loadingMessage: "Registering..."));
 

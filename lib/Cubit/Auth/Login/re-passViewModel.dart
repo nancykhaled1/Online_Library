@@ -11,7 +11,7 @@ class RePasswordCubit extends Cubit<States> {
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController rePasswordController = TextEditingController();
-  var formKey = GlobalKey<FormState>();
+  var reFormKey = GlobalKey<FormState>();
   bool isPasswordVisible = true;
   bool isRePasswordVisible = true;
 
@@ -40,5 +40,15 @@ class RePasswordCubit extends Cubit<States> {
 
       },
     );
+  }
+
+
+  void clearForm() {
+    passwordController.clear();
+    rePasswordController.clear();
+    isPasswordVisible = true;
+    isRePasswordVisible = true;
+
+    emit(InitialState());
   }
 }

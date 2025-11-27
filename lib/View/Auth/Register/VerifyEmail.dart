@@ -6,9 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_library_app/View/Auth/Register/RegisterScreen.dart';
 
+import '../../../Cubit/Auth/Login/forget_passViewModel.dart';
 import '../../../Cubit/Auth/Register/VerifyemailViewModel.dart';
 import '../../../Cubit/States/States.dart';
 import '../../../Utils/MyColors.dart';
+import '../../../Utils/SuccessSheet.dart';
 import '../../../Utils/dialog.dart';
 import '../../Home/home.dart';
 
@@ -64,15 +66,15 @@ class _VerifyEmailState extends State<VerifyEmail> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.read<VerifyEmailCubit>();
+    final reSend = context.read<ForgetPassScreenCubit>();
+
 
     return BlocConsumer<VerifyEmailCubit, States>(
       listener: (context, state) async {
         if (state is VerifyEmailSuccessState) {
-          showOverlayMessage(context, state.response.data.message, isError: false);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => HomeScreen()),
-            );
+
+          showSuccessBottomSheet(context);
+
           } else if (state is ErrorState) {
           showOverlayMessage(context, state.errorMessage!, isError: true);
         }
@@ -102,7 +104,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
               ),
             ),
             body: SingleChildScrollView(
-              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
+              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 0.h),
               child: WillPopScope(
                 onWillPop: () async {
                   // هنا بتتحكمى هل ترجعى ولا لا
@@ -112,27 +114,14 @@ class _VerifyEmailState extends State<VerifyEmail> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Color(0xFF3B82F6),
-                          child: Icon(Icons.menu_book_rounded,
-                              color: Colors.white, size: 20),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Baca",
-                          style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Center(
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        width: 150.w,
+                        height: 150.h,
+                      ),
                     ),
 
-                    // Center(
-                    //     child: SvgPicture.asset('assets/images/code-pass.svg')),
-                    SizedBox(height: 60.h),
                     Text(
                       'Verification',
                       style: TextStyle(
@@ -209,66 +198,66 @@ class _VerifyEmailState extends State<VerifyEmail> {
                       }),
                     ),
                     SizedBox(height: 20.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Have a problem ? ',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: MyColors.greyColor,
-                          ),
-                        ),
-
-                        /// لو الوقت لسه شغال → اعرض العداد
-                        /// لو خلص → اعرض زر Resend
-                        canResend
-                            ? GestureDetector(
-                          onTap: () {
-                            /// 1) إرسال الكود من جديد
-                            viewModel.verifyEmail(userId: widget.userId, code: viewModel.getEnteredCode());
-
-                            /// 2) إعادة ضبط العداد
-                            setState(() {
-                              totalSeconds = 60;
-                              canResend = false;
-                            });
-
-                            /// 3) إعادة تشغيل التايمر
-                            timer = Timer.periodic(Duration(seconds: 1), (t) {
-                              if (totalSeconds == 0) {
-                                t.cancel();
-                                setState(() {
-                                  canResend = true;
-                                });
-                              } else {
-                                setState(() {
-                                  totalSeconds--;
-                                });
-                              }
-                            });
-                          },
-                          child: Text(
-                            "Resend",
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: MyColors.primaryColor,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        )
-                            : Text(
-                          formatTime(totalSeconds),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: MyColors.primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       'Have a problem ? ',
+                    //       style: TextStyle(
+                    //         fontSize: 14.sp,
+                    //         fontWeight: FontWeight.w500,
+                    //         color: MyColors.greyColor,
+                    //       ),
+                    //     ),
+                    //
+                    //     /// لو الوقت لسه شغال → اعرض العداد
+                    //     /// لو خلص → اعرض زر Resend
+                    //     canResend
+                    //         ? GestureDetector(
+                    //       onTap: () {
+                    //         /// 1) إرسال الكود من جديد
+                    //         reSend.sendEmail();
+                    //
+                    //         /// 2) إعادة ضبط العداد
+                    //         setState(() {
+                    //           totalSeconds = 60;
+                    //           canResend = false;
+                    //         });
+                    //
+                    //         /// 3) إعادة تشغيل التايمر
+                    //         timer = Timer.periodic(Duration(seconds: 1), (t) {
+                    //           if (totalSeconds == 0) {
+                    //             t.cancel();
+                    //             setState(() {
+                    //               canResend = true;
+                    //             });
+                    //           } else {
+                    //             setState(() {
+                    //               totalSeconds--;
+                    //             });
+                    //           }
+                    //         });
+                    //       },
+                    //       child: Text(
+                    //         "Resend",
+                    //         style: TextStyle(
+                    //           fontSize: 14.sp,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: MyColors.primaryColor,
+                    //           decoration: TextDecoration.underline,
+                    //         ),
+                    //       ),
+                    //     )
+                    //         : Text(
+                    //       formatTime(totalSeconds),
+                    //       style: TextStyle(
+                    //         fontSize: 14.sp,
+                    //         fontWeight: FontWeight.w500,
+                    //         color: MyColors.primaryColor,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
 
 
                     SizedBox(height: 50.h),

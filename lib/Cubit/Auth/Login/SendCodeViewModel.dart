@@ -55,4 +55,18 @@ class SendCodeCubit extends Cubit<States> {
       },
     );
   }
+
+  void clear() {
+    for (var controller in controllers) {
+      controller.clear();
+    }
+
+    codeController.clear();
+
+    isCodeComplete = false;
+    lastEnteredCode = "";
+
+    emit(InitialState()); // تحديث الـ UI
+  }
+
 }

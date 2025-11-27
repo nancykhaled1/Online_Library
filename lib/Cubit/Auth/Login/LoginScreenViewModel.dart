@@ -16,14 +16,14 @@ class LoginScreenCubit extends Cubit<States> {
 
   LoginScreenCubit(this.repository) : super(InitialState());
 
-  var formKey = GlobalKey<FormState>();
+  var loginFormKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = true;
 
   Future<void> login() async {
-    if (formKey.currentState!.validate()) {
+
       emit(LoadingState(loadingMessage: "Loading..."));
 
       final request = LoginRequest(
@@ -62,7 +62,7 @@ class LoginScreenCubit extends Cubit<States> {
           emit(LoginSuccessState(response: data));
         },
       );
-    }
+
   }
 
   void clearForm() {

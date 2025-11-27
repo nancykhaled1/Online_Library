@@ -12,8 +12,24 @@ import '../../../Utils/TextField.dart';
 import '../../../Utils/dialog.dart';
 import 'SendCode.dart';
 
-class SendEmailScreen extends StatelessWidget{
+class SendEmailScreen extends StatefulWidget{
   static const String routeName = 'sendEmail';
+
+  @override
+  State<SendEmailScreen> createState() => _SendEmailScreenState();
+}
+
+class _SendEmailScreenState extends State<SendEmailScreen> {
+  // late ForgetPassScreenCubit Cubit;
+  //
+  // @override
+  // void dispose() {
+  //   Cubit.clearForm();
+  //   super.dispose();
+  // }
+  final _formKey = GlobalKey<FormState>();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +40,7 @@ class SendEmailScreen extends StatelessWidget{
 
         } else if (state is SendEmailSuccessState) {
           showOverlayMessage(context, state.response.data!.message!, isError: false);
+
           final email = context.read<ForgetPassScreenCubit>().emailController.text;
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
@@ -50,6 +67,7 @@ class SendEmailScreen extends StatelessWidget{
                 scrolledUnderElevation: 0,
                 leading: IconButton(
                   onPressed: () {
+                    context.read<ForgetPassScreenCubit>().clearForm();
                     Navigator.of(context).pushReplacement(
                       PageRouteBuilder(
                         pageBuilder:
@@ -64,30 +82,19 @@ class SendEmailScreen extends StatelessWidget{
                 ),
               ),
               body: SingleChildScrollView(
-                padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
+                padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 0.h),
                 child: Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Color(0xFF3B82F6),
-                          child: Icon(Icons.menu_book_rounded,
-                              color: Colors.white, size: 20),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Baca",
-                          style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Center(
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        width: 150.w,
+                        height: 150.h,
+                      ),
                     ),
 
-                    SizedBox(height: 60.h),
                     Text('Forget your Password ?',
                       style: TextStyle(
                           fontSize: 24.sp,
@@ -107,10 +114,10 @@ class SendEmailScreen extends StatelessWidget{
                       ),
                     ),
                     SizedBox(
-                      height: 40.h,
+                      height: 30.h,
                     ),
                     Form(
-                      key: viewModel.formKey,
+                      key: _formKey,
                       child: Column(
                         children: [
                           CustomTextField(
@@ -149,7 +156,9 @@ class SendEmailScreen extends StatelessWidget{
                             onPressed: state is LoadingState
                                 ? null // منع الضغط أثناء التحميل
                                 : () {
-                              viewModel.sendEmail();
+                              if (_formKey.currentState!.validate()) {
+                                viewModel.sendEmail();
+                              }
                             },
                             child: state is LoadingState
                                 ? Center(
@@ -196,5 +205,4 @@ class SendEmailScreen extends StatelessWidget{
 
 
   }
-
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_library_app/View/Auth/Login/LoginScreen.dart';
 
 import '../../../Cubit/Auth/Login/re-passViewModel.dart';
 import '../../../Cubit/States/States.dart';
@@ -28,6 +29,7 @@ class ResetPassword extends StatefulWidget{
 
 class _ResetPasswordState extends State<ResetPassword> {
 
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +40,16 @@ class _ResetPasswordState extends State<ResetPassword> {
 
         } else if (state is ChangePassSuccessState) {
          showOverlayMessage(context, state.response.data!.message!, isError: false);
-          Navigator.of(context).pushReplacement(
+         context.read<RePasswordCubit>().clearForm();
+
+         Navigator.of(context).pushReplacement(
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),
           );
         }
-
       },
     builder: (context, state) {
       final viewModel = context.read<RePasswordCubit>();
@@ -64,31 +67,20 @@ class _ResetPasswordState extends State<ResetPassword> {
           //   scrolledUnderElevation: 0,
           // ),
           body: SingleChildScrollView(
-            padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
+            padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 0.h),
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Color(0xFF3B82F6),
-                      child: Icon(Icons.menu_book_rounded,
-                          color: Colors.white, size: 20),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      "Baca",
-                      style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Center(
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    width: 150.w,
+                    height: 150.h,
+                  ),
                 ),
 
-                SizedBox(height: 60.h),
-                Text('Enter your new Password !',
+                Text('Enter your new Password!',
                   style: TextStyle(
                       fontSize: 24.sp,
                       fontWeight: FontWeight.w700,
@@ -107,10 +99,10 @@ class _ResetPasswordState extends State<ResetPassword> {
                 //   ),
                 // ),
                 SizedBox(
-                  height: 40.h,
+                  height: 30.h,
                 ),
                 Form(
-                   key: viewModel.formKey,
+                   key: _formKey,
                   child: Column(
                     children: [
                       // 🔹 Password field

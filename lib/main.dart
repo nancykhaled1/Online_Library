@@ -22,6 +22,7 @@ import 'package:online_library_app/Sources/ProfiledataSource.dart';
 import 'package:online_library_app/Sources/ReturnDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 import 'package:online_library_app/Sources/SearchDataSource.dart';
+import 'package:online_library_app/View/Boarding/BoardingScreen.dart';
 
 import 'Cubit/Auth/Login/LoginScreenViewModel.dart';
 import 'Cubit/Auth/Login/SendCodeViewModel.dart';
@@ -64,6 +65,7 @@ import 'View/Auth/Login/SendEmailScreen.dart';
 import 'View/Auth/Register/RegisterScreen.dart';
 import 'View/Home/LibraryHomeScreen.dart';
 import 'View/Home/home.dart';
+import 'View/Splash/SplashScreen.dart';
 
 
 Future<void> main() async {
@@ -373,8 +375,10 @@ class MyApp extends StatelessWidget {
               //   GlobalCupertinoLocalizations.delegate,
               // ],
 
-              initialRoute: LoginScreen.routeName,
+              initialRoute: splashScreen.routeName,
               routes: {
+                splashScreen.routeName : (context) => splashScreen(),
+                OnBoarding.routeName : (context) => OnBoarding(),
                 LoginScreen.routeName : (context) => LoginScreen(),
                 SendEmailScreen.routeName : (context) => SendEmailScreen(),
                 HomeScreen.routeName : (context) => HomeScreen(),

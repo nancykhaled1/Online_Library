@@ -117,7 +117,9 @@ class SearchBooks {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     v = json['__v'];
-    averageRating = json['averageRating'];
+    averageRating = json['averageRating'] != null
+        ? (json['averageRating'] as num).toDouble()
+        : null;
   }
   String? id;
   String? name;
@@ -139,7 +141,7 @@ class SearchBooks {
   String? createdAt;
   String? updatedAt;
   int? v;
-  int? averageRating;
+  double? averageRating;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

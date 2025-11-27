@@ -32,7 +32,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
   final PageController pageController = PageController();
 
   final List<String> images = [
-    'assets/images/book-lovers.svg',
+    'assets/images/slider1.svg',
     'assets/images/slider2.svg',
     'assets/images/slider3.svg',
   ];
@@ -88,8 +88,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
               _setupTabListener();
 
               /// 🚀 أول Parent
-              final firstParentId = state.parents[0].id!;
-              context.read<CategoryCubit>().getCategoryById(firstParentId);
+              if (state.parents.isNotEmpty) {
+                final firstParentId = state.parents.first.id!;
+                context.read<CategoryCubit>().getCategoryById(firstParentId);
+              }
             }
           },
           child: BlocBuilder<HomeScreenCubit, States>(
@@ -103,11 +105,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                 if (error == "No Internet Connection") {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SvgPicture.asset(
-                        "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                        width: 200,
-                        height: 200,
+                      Center(
+                        child: SvgPicture.asset(
+                          "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                          width: 200,
+                          height: 200,
+                        ),
                       ),
                       const SizedBox(height: 20),
                       Text(
@@ -140,7 +145,9 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
 
                 if (_tabController == null) return SizedBox();
 
-                String currentTab = parents[_tabController!.index].name ?? '';
+                String currentTab = parents.isNotEmpty
+                    ? parents[_tabController!.index].name ?? ''
+                    : '';
 
                 return SingleChildScrollView(
                   padding:
@@ -152,6 +159,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Image.asset(
+                            "assets/images/logo2.png",
+                            width: 40.w,
+                            height: 40.h,
+                          ),
                           Expanded(
                             child: TabBar(
                               controller: _tabController,

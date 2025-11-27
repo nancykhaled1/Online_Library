@@ -198,11 +198,14 @@ class _LibraryScreenState extends State<LibraryScreen>
           if (error == "No Internet Connection") {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                  width: 200,
-                  height: 200,
+                Center(
+                  child: SvgPicture.asset(
+                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -229,6 +232,7 @@ class _LibraryScreenState extends State<LibraryScreen>
           }
 
         }
+
         else {
           return Container();
         }

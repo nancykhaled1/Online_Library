@@ -77,7 +77,7 @@ class OnBorrowScreen extends StatelessWidget{
             child: Column(
               children: [
                 buildRow("Borrow date", borrowDate??''),
-                buildRow("Borrow time", borrowBook.borrowTime ??''),
+                buildRow("Borrow time", formattedTime),
                 buildRow("Must be returned", formattedDate),
               ],
             ),

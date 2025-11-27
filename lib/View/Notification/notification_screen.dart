@@ -79,7 +79,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     if (state is LoadingState) {
                       return Center(
                         child: CircularProgressIndicator(
-                          color: MyColors.primaryColor,
                         ),
                       );
                     }
@@ -89,11 +88,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       if (error == "No Internet Connection") {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SvgPicture.asset(
-                              "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                              width: 200,
-                              height: 200,
+                            Center(
+                              child: SvgPicture.asset(
+                                "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                                width: 200,
+                                height: 200,
+                              ),
                             ),
                             const SizedBox(height: 20),
                             Text(
@@ -132,14 +134,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SvgPicture.asset(
-                                  'assets/images/no-notification.svg',
-                                  width: 238,
-                                  height: 238,
+                                  'assets/images/notification-slash.svg',
+                                  // width: 238,
+                                  // height: 238,
                                 ),
                                 SizedBox(
                                   height: 20.h,
                                 ),
-                                Text('no notifications',
+                                Text('no notifications yet',
                                   style: TextStyle(
                                     color: MyColors.greyColor,
                                     fontFamily: "Noto Kufi Arabic",
@@ -153,15 +155,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         );
                       }
 
-                      return ListView.separated(
-                        separatorBuilder:  (_, __) =>
-                            Divider(
-                              color: MyColors.greyColor,
-                              thickness: 1.5,
-                              // indent: 16.w,
-                              // endIndent: 16.w,
-                              height: 16.h,
-                            ),
+                      return ListView.builder(
                         itemCount: notifications.length,
                         itemBuilder: (context, index) {
                           final notif = notifications[index];

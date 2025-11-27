@@ -34,11 +34,12 @@ class _LoginScreenState extends State<LoginScreen> {
     loginCubit = context.read<LoginScreenCubit>();
   }
 
-  @override
-  void dispose() {
-    loginCubit.clearForm();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   loginCubit.clearForm();
+  //   super.dispose();
+  // }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         else if (state is LoginSuccessState) {
           showOverlayMessage(context, state.response.data!.message!, isError: false);
+          context.read<LoginScreenCubit>().clearForm();
 
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => HomeScreen()),
-            );
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>  HomeScreen(),
+            ),
+          );
 
         }
       },
@@ -64,30 +67,20 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: MyColors.whiteColor,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 40.h),
+              padding:  EdgeInsets.symmetric(horizontal: 24.w,vertical: 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 🔹 Logo & App name
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Color(0xFF3B82F6),
-                        child: Icon(Icons.menu_book_rounded,
-                            color: Colors.white, size: 20),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Baca",
-                        style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  Center(
+                    child: Image.asset(
+                      "assets/images/logo.png",
+                      width: 150.w,
+                      height: 150.h,
+                    ),
                   ),
 
-                  SizedBox(height: 40.h),
+                //  SizedBox(height: 30.h),
 
 
 
@@ -110,10 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 30.h),
 
                   Form(
-                    key: viewModel.formKey,
+                    key: _formKey,
                     child: Column(
                         children: [
                           CustomTextField(
@@ -186,7 +179,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, SendEmailScreen.routeName);
+                                  context.read<LoginScreenCubit>().clearForm();
+
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => SendEmailScreen(),
+                                    ),
+                                  );
                                 },
                                 child:  Text(
                                   "Reset here",
@@ -207,10 +206,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           // 🔹 Login button
                           ElevatedButton(
                             onPressed: state is LoadingState
-                                ? null // منع الضغط أثناء التحميل
-                                : () async {
-                              viewModel.login();
-
+                                ? null
+                                : () {
+                              if (_formKey.currentState!.validate()) {
+                                viewModel.login();
+                              } else {
+                                showOverlayMessage(context, "Please complete the form", isError: true);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: MyColors.primaryColor,
@@ -268,13 +270,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   BlocConsumer<GoogleCubit, States>(
                     listener: (context, state)  async {
                       if (state is LoadingState) {
-                       // showOverlayMessage(context, "جارى التحميل", isError: false);
+                        showOverlayMessage(context, "Loading", isError: false);
                       } else if (state is ErrorState) {
                         state.errorMessage;
-                       // showOverlayMessage(context, state.errorMessage!, isError: true);
+                        showOverlayMessage(context, state.errorMessage!, isError: true);
                       } else if (state is GoogleSuccessState) {
-                        // showOverlayMessage(
-                        //     context, "تم التسجيل بنجاح", isError: false);
+                        showOverlayMessage(
+                            context, "Successfully login", isError: false);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -288,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? null
                             : () async {
                           context.read<GoogleCubit>().signInWithGoogle(
-                              role:'user'
+
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -340,9 +342,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            RegisterScreen.routeName,
+                          context.read<LoginScreenCubit>().clearForm();
+
+                          Navigator.of(context).pushReplacement(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => RegisterScreen(),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
+                            ),
                           );
                         },
                         child: Text(

@@ -1,8 +1,6 @@
 class GoogleResponse {
   final bool success;
   final String token;
-  final String role;
-  final bool isNew;
   final UserData user;
 
 
@@ -10,16 +8,12 @@ class GoogleResponse {
     required this.success,
     required this.token,
     required this.user,
-    required this.role,
-    required this.isNew,
   });
 
   factory GoogleResponse.fromJson(Map<String, dynamic> json) {
     return GoogleResponse(
       success: json["success"],
       token: json["token"],
-      role: json["role"],
-      isNew: json["isNew"],
       user: UserData.fromJson(json['user'] ?? {}),
     );
   }
@@ -37,7 +31,6 @@ class UserData {
     required this.id,
     required this.name,
     required this.email,
-    // required this.role,
 
   });
 
@@ -51,3 +44,13 @@ class UserData {
     );
   }
 }
+
+
+// success: true,
+// token: authToken,
+// user: {
+// id: user._id,
+// name: user.name,
+// email: user.email,
+// },
+

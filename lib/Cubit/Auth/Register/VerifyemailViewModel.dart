@@ -17,6 +17,7 @@ class VerifyEmailCubit extends Cubit<States> {
   List<TextEditingController> controllers =
   List.generate(6, (index) => TextEditingController());
   List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
+  String lastEnteredCode = "";
 
   bool isCodeComplete = false;
   void checkCodeCompletion() {
@@ -58,4 +59,17 @@ class VerifyEmailCubit extends Cubit<States> {
       },
     );
   }
+  void clear() {
+    for (var controller in controllers) {
+      controller.clear();
+    }
+
+    codeController.clear();
+
+    isCodeComplete = false;
+    lastEnteredCode = "";
+
+    emit(InitialState()); // تحديث الـ UI
+  }
+
 }

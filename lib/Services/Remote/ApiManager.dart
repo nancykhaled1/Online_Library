@@ -423,7 +423,7 @@ class ApiManager{
     }
   }
 
-  Future<Either<LoginError, GoogleResponse>> googleLogin(String token , String role) async {
+  Future<Either<LoginError, GoogleResponse>> googleLogin(String token ) async {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
 
@@ -434,7 +434,7 @@ class ApiManager{
 
         var requestBody = {
           "token": token, // ده اللي جاي من GoogleSignIn
-          "role":role,
+
         };
 
         print('Sending Google Login request to: $url');

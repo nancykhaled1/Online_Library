@@ -60,11 +60,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
           if (error == "No Internet Connection") {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                  width: 200,
-                  height: 200,
+                Center(
+                  child: SvgPicture.asset(
+                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -402,25 +405,21 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                             radius: 15.r,
                                             backgroundColor: MyColors.whiteColor,
                                             child: ClipOval(
-                                              child: imageUrl != null && imageUrl.isNotEmpty
+                                              child: (review.userId?.photo != null && review.userId!.photo!.startsWith("http"))
                                                   ? Image.network(
-                                                "$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}",
+                                                review.userId!.photo!,
                                                 key: UniqueKey(),
                                                 fit: BoxFit.cover,
                                                 width: 100.w,
                                                 height: 100.h,
-                                                loadingBuilder: (context, child, loadingProgress) {
-                                                  if (loadingProgress == null) return child;
-                                                  return const Center(
-                                                    child: CircularProgressIndicator(),
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return Image.asset(
+                                                    'assets/images/personalImage.png',
+                                                    fit: BoxFit.cover,
+                                                    width: 100.w,
+                                                    height: 100.h,
                                                   );
                                                 },
-                                                errorBuilder: (context, error, stackTrace) =>
-                                                    Image.asset('assets/images/personalImage.png',
-                                                        fit: BoxFit.fill,
-                                                        width: 100.w,
-                                                        height: 100.h
-                                                    ),
                                               )
                                                   : Image.asset(
                                                 'assets/images/personalImage.png',
@@ -685,7 +684,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
 
         return Scaffold(
           backgroundColor: MyColors.whiteColor,
-            body: Center(child: Text("No Data")));
+            body: Container());
       },
     );
   }

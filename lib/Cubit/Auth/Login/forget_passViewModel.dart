@@ -19,7 +19,7 @@ class ForgetPassScreenCubit extends Cubit<States> {
 
 
   Future<void> sendEmail() async {
-    if (formKey.currentState!.validate()) {
+
       emit(LoadingState(loadingMessage: "Loading..."));
 
       final request = SendEmailRequest(
@@ -40,6 +40,13 @@ class ForgetPassScreenCubit extends Cubit<States> {
           emit(SendEmailSuccessState(response: data));
         },
       );
-    }
+
+  }
+
+  void clearForm() {
+    emailController.clear();
+
+
+    emit(InitialState());
   }
 }

@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../../../Models/Requests/GoogleRequest.dart';
 import '../../../Repositories/GoogleRepository.dart';
 import '../../../Services/Local/SharedPreference.dart';
@@ -13,14 +10,12 @@ class GoogleCubit extends Cubit<States> {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    serverClientId: "813623514492-jibeig9a2l5a4gap63um33chv4navsq0.apps.googleusercontent.com",
+    serverClientId: "813623514492-ouif2n91mq1qcvkmgt4a3cekuuf1692q.apps.googleusercontent.com",
   );
-
-
 
   GoogleCubit(this.repository) : super(InitialState());
 
-  Future<void> signInWithGoogle({String? role}) async {
+  Future<void> signInWithGoogle() async {
     emit(LoadingState(loadingMessage: 'Loading........'));
     try {
       await _googleSignIn.signOut();
@@ -47,7 +42,7 @@ class GoogleCubit extends Cubit<States> {
       print("Sending request to backend...");
 
       // ابعت idToken للباك اند
-      final response = await repository.google(GoogleLoginRequest(idToken: idToken, role: role!));
+      final response = await repository.google(GoogleLoginRequest(token: idToken, ));
 
       print("Backend returned response: $response");
 
@@ -65,21 +60,13 @@ class GoogleCubit extends Cubit<States> {
 
 
 
-          final role = googleResponse.role;
-          await TokenStorage.saveRole(role);
-          final savedRole = await TokenStorage.getRole();
-          print("Saved role locally: $savedRole");
-
 
           final id = googleResponse.user.id;
           await TokenStorage.saveId(id);
           final savedId = await TokenStorage.getUserId();
           print("Saved id locally: $savedId");
 
-          final isNew = googleResponse.isNew;
-          await TokenStorage.saveIsNew(isNew);
-          final savedIsNew= await TokenStorage.getIsNew();
-          print("Saved new: $savedIsNew");
+
 
 
           emit(GoogleSuccessState(response: googleResponse));
