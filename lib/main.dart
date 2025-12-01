@@ -23,7 +23,6 @@ import 'package:online_library_app/Sources/ReturnDataSource.dart';
 import 'package:online_library_app/Sources/SaveBookDataSource.dart';
 import 'package:online_library_app/Sources/SearchDataSource.dart';
 import 'package:online_library_app/View/Boarding/BoardingScreen.dart';
-
 import 'Cubit/Auth/Login/LoginScreenViewModel.dart';
 import 'Cubit/Auth/Login/SendCodeViewModel.dart';
 import 'Cubit/Auth/Login/forget_passViewModel.dart';
@@ -353,44 +352,51 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(360, 690),
-      minTextAdapt: true,
-      splitScreenMode: true,
-
-      builder: (_, child) {
-        return SafeArea(
-          child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(primaryColor: MyColors.primaryColor,
-                colorScheme: ColorScheme.fromSeed(seedColor: MyColors.primaryColor),
-
-              ),
-
-              // locale: Locale('ar', ''),
-              // supportedLocales: [Locale('ar', ''), Locale('en', '')],
-              // localizationsDelegates: [
-              //   GlobalMaterialLocalizations.delegate,
-              //   GlobalWidgetsLocalizations.delegate,
-              //   GlobalCupertinoLocalizations.delegate,
-              // ],
-
-              initialRoute: splashScreen.routeName,
-              routes: {
-                splashScreen.routeName : (context) => splashScreen(),
-                OnBoarding.routeName : (context) => OnBoarding(),
-                LoginScreen.routeName : (context) => LoginScreen(),
-                SendEmailScreen.routeName : (context) => SendEmailScreen(),
-                HomeScreen.routeName : (context) => HomeScreen(),
-                RegisterScreen.routeName : (context) => RegisterScreen(),
-                LibraryHomeScreen.routeName : (context) => LibraryHomeScreen(),
-               // MyShelfScreen.routeName : (context) => MyShelfScreen()
-              }
-
-
-          ),
-        );
+    return WillPopScope(
+      onWillPop: () async {
+        // هنا بتتحكمى هل ترجعى ولا لا
+        return false; // ❌ مش هيرجع
+        // return true;  ✅ هيرجع
       },
+      child: ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+
+        builder: (_, child) {
+          return SafeArea(
+            child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(primaryColor: MyColors.primaryColor,
+                  colorScheme: ColorScheme.fromSeed(seedColor: MyColors.primaryColor),
+
+                ),
+
+                // locale: Locale('ar', ''),
+                // supportedLocales: [Locale('ar', ''), Locale('en', '')],
+                // localizationsDelegates: [
+                //   GlobalMaterialLocalizations.delegate,
+                //   GlobalWidgetsLocalizations.delegate,
+                //   GlobalCupertinoLocalizations.delegate,
+                // ],
+
+                initialRoute: splashScreen.routeName,
+                routes: {
+                  splashScreen.routeName : (context) => splashScreen(),
+                  OnBoarding.routeName : (context) => OnBoarding(),
+                  LoginScreen.routeName : (context) => LoginScreen(),
+                  SendEmailScreen.routeName : (context) => SendEmailScreen(),
+                  HomeScreen.routeName : (context) => HomeScreen(),
+                  RegisterScreen.routeName : (context) => RegisterScreen(),
+                  LibraryHomeScreen.routeName : (context) => LibraryHomeScreen(),
+                 // MyShelfScreen.routeName : (context) => MyShelfScreen()
+                }
+
+
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:online_library_app/View/Home/CategoryDetails.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../Cubit/Home/BookViewModel.dart';
 import '../../Cubit/Home/CategoryViewModel.dart';
 import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
-import '../ImageBuild.dart';
 import '../Library/BookDetails.dart';
 import '../Notification/notification_screen.dart';
 import '../Search/SearchScreen.dart';

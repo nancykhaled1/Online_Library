@@ -40,58 +40,6 @@ class ApiConstants{
 
   static const String counterApi = "/api/user/notification/unread-count";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  static const String updateDataApi = "/api/user/auth/local/update";
-
-  static const String updateImageApi = "/api/user/auth/local/update-image";
-
-  static const String deleteApi = "/api/user/auth/local/delete";
-
-  static const String levelApi = "/api/user/level";
-
-  static const String departmentApi = "/api/user/department";
-
-
-
-
-
-
-  static const String getMessagesApi = "/api/user/chat/messages";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

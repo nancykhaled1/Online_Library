@@ -27,295 +27,302 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: MyColors.whiteColor,
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-          child: Column(
-            children: [
-              /// ---------- SEARCH FIELD ----------
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                              HomeScreen(initialIndex: 0,),
-                          transitionDuration: Duration.zero,
-                          reverseTransitionDuration: Duration.zero,
-                        ),
-                      );
-                    },
-                    icon: Icon(Icons.arrow_back),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: "Tap to search...",
-                        hintStyle: TextStyle(
-                          fontSize: 14.sp,
-                          color: MyColors.greyColor,
-                        ),
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.all(12.sp),
-                          child: SvgPicture.asset('assets/images/Icon Left.svg'),
-                        ),
-                        filled: true,
-                        fillColor: MyColors.softGreyColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50.r),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                        onChanged: (value) {
-                          if (value.isEmpty) {
-                            context.read<SearchScreenCubit>().clearSearchResults();
-                          } else {
-                            context.read<SearchScreenCubit>().searchBooks(value);
-                          }
-                        }
-
+    return WillPopScope(
+      onWillPop: () async {
+        // هنا بتتحكمى هل ترجعى ولا لا
+        return false; // ❌ مش هيرجع
+        // return true;  ✅ هيرجع
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: MyColors.whiteColor,
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            child: Column(
+              children: [
+                /// ---------- SEARCH FIELD ----------
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                HomeScreen(initialIndex: 0,),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.arrow_back),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 25.h),
-
-              BlocBuilder<SearchScreenCubit, States>(
-                builder: (context, state) {
-
-                  if (state is SearchBooksSuccessState && state.search.isNotEmpty) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Your recent search",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: MyColors.blackColor,
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: "Tap to search...",
+                          hintStyle: TextStyle(
+                            fontSize: 14.sp,
+                            color: MyColors.greyColor,
+                          ),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(12.sp),
+                            child: SvgPicture.asset('assets/images/Icon Left.svg'),
+                          ),
+                          filled: true,
+                          fillColor: MyColors.softGreyColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50.r),
+                            borderSide: BorderSide.none,
                           ),
                         ),
-                        SizedBox(width: 25.w),
-                        GestureDetector(
-                          onTap: () {
-                            context.read<SearchScreenCubit>().clearSearchResults();
-                            _searchController.clear();
-                          },
-                          child: Text(
-                            "clear",
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                              color: MyColors.greyColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
+                          onChanged: (value) {
+                            if (value.isEmpty) {
+                              context.read<SearchScreenCubit>().clearSearchResults();
+                            } else {
+                              context.read<SearchScreenCubit>().searchBooks(value);
+                            }
+                          }
 
-                  /// لو مفيش نتائج → متعرضوش خالص
-                  return SizedBox.shrink();
-                },
-              ),
+                      ),
+                    ),
+                  ],
+                ),
 
+                SizedBox(height: 25.h),
 
-              SizedBox(height: 25.h),
-
-              /// ---------- SEARCH RESULTS ----------
-              Expanded(
-                child: BlocBuilder<SearchScreenCubit, States>(
+                BlocBuilder<SearchScreenCubit, States>(
                   builder: (context, state) {
-                    if (state is LoadingState) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    else if (state is ErrorState) {
-                      final error = state.errorMessage;
 
-                      if (error == "No Internet Connection") {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                              width: 200,
-                              height: 200,
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              "No internet connection",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: MyColors.greyColor,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Noto Kufi Arabic",
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return Center(
-                          child: Text(
-                            "Please, Try again later",
+                    if (state is SearchBooksSuccessState && state.search.isNotEmpty) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Your recent search",
                             style: TextStyle(
-                              color: MyColors.greyColor,
                               fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: MyColors.blackColor,
                             ),
                           ),
-                        );
-                      }
-
-                    }
-
-                    else if (state is SearchBooksSuccessState) {
-                      final books = state.search;
-
-                      if (books.isEmpty) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('assets/images/nofound.png'),
-                            SizedBox(width: 5.w,),
-                            Text(
-                              "No matches found",
-                              style: TextStyle(
-                                color: MyColors.blackColor,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w700
-                              ),
-                            ),
-                            Text(
-                              "There is no matches data that you search\n Try using another keyword.",
-                              style: TextStyle(
-                                color: MyColors.greyColor,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-
-                      return ListView.separated(
-                        itemCount: books.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 20.h),
-                        itemBuilder: (context, index) {
-                          final book = books[index];
-                          return GestureDetector(
+                          SizedBox(width: 25.w),
+                          GestureDetector(
                             onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => BookDetailsScreen(
-                                    bookId: book.id!,
-                                  ),
-                                ),
-                              );
+                              context.read<SearchScreenCubit>().clearSearchResults();
+                              _searchController.clear();
                             },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    FadeInImage(
-                                      placeholder: AssetImage("assets/images/nofound.png"),
-                                      image: NetworkImage(book.mainImage ?? ""),
-                                      height: 90.h,
-                                      width: 60.w,
-                                      imageErrorBuilder: (context, error, stackTrace) {
-                                        return Image.asset("assets/images/nofound.png");
-                                      },
-                                    ),
-
-                                    // Image.network(
-                                    //   book.mainImage ?? '',
-                                    //   height: 90.h,
-                                    //   width: 60.w,
-                                    //   fit: BoxFit.cover,
-                                    // ),
-                                    SizedBox(width: 20.w),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          book.name ?? '',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14.sp,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          book.publisher ?? '',
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: MyColors.greyColor,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Row(
-                                          children: [
-                                            SvgPicture.asset(
-                                                'assets/images/star.svg'),
-                                            SizedBox(width: 4.w),
-                                            Text(
-                                              '${book.averageRating ??0}',
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w700,
-                                                color: MyColors.greyColor,
-                                              ),
-                                            ),
-                                            SizedBox(width: 25.w),
-                                            Text(
-                                              "${book.numberInStock} book available",
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w700,
-                                                color: MyColors.primaryColor,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
+                            child: Text(
+                              "clear",
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w700,
+                                color: MyColors.greyColor,
+                              ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       );
                     }
 
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset('assets/images/search.svg',height: 150.h,),
-                        SizedBox(height: 10.w,),
-                        Text(
-                          "Start typing to search...",
-                          style: TextStyle(
-                              color: MyColors.greyColor,
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w500
-                          ),
-                        ),
-                      ],
-                    );
+                    /// لو مفيش نتائج → متعرضوش خالص
+                    return SizedBox.shrink();
                   },
                 ),
-              ),
-            ],
+
+
+                SizedBox(height: 25.h),
+
+                /// ---------- SEARCH RESULTS ----------
+                Expanded(
+                  child: BlocBuilder<SearchScreenCubit, States>(
+                    builder: (context, state) {
+                      if (state is LoadingState) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      else if (state is ErrorState) {
+                        final error = state.errorMessage;
+
+                        if (error == "No Internet Connection") {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
+                                width: 200,
+                                height: 200,
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "No internet connection",
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: MyColors.greyColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Noto Kufi Arabic",
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Center(
+                            child: Text(
+                              "Please, Try again later",
+                              style: TextStyle(
+                                color: MyColors.greyColor,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                          );
+                        }
+
+                      }
+
+                      else if (state is SearchBooksSuccessState) {
+                        final books = state.search;
+
+                        if (books.isEmpty) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset('assets/images/nofound.png'),
+                              SizedBox(width: 5.w,),
+                              Text(
+                                "No matches found",
+                                style: TextStyle(
+                                  color: MyColors.blackColor,
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w700
+                                ),
+                              ),
+                              Text(
+                                "There is no matches data that you search\n Try using another keyword.",
+                                style: TextStyle(
+                                  color: MyColors.greyColor,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return ListView.separated(
+                          itemCount: books.length,
+                          separatorBuilder: (_, __) => SizedBox(height: 20.h),
+                          itemBuilder: (context, index) {
+                            final book = books[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => BookDetailsScreen(
+                                      bookId: book.id!,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      FadeInImage(
+                                        placeholder: AssetImage("assets/images/nofound.png"),
+                                        image: NetworkImage(book.mainImage ?? ""),
+                                        height: 90.h,
+                                        width: 60.w,
+                                        imageErrorBuilder: (context, error, stackTrace) {
+                                          return Image.asset("assets/images/nofound.png");
+                                        },
+                                      ),
+
+                                      // Image.network(
+                                      //   book.mainImage ?? '',
+                                      //   height: 90.h,
+                                      //   width: 60.w,
+                                      //   fit: BoxFit.cover,
+                                      // ),
+                                      SizedBox(width: 20.w),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            book.name ?? '',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14.sp,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            book.publisher ?? '',
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: MyColors.greyColor,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                  'assets/images/star.svg'),
+                                              SizedBox(width: 4.w),
+                                              Text(
+                                                '${book.averageRating?.toStringAsFixed(1) ??0}',
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: MyColors.greyColor,
+                                                ),
+                                              ),
+                                              SizedBox(width: 25.w),
+                                              Text(
+                                                "${book.numberInStock} book available",
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: MyColors.primaryColor,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset('assets/images/search.svg',height: 150.h,),
+                          SizedBox(height: 10.w,),
+                          Text(
+                            "Start typing to search...",
+                            style: TextStyle(
+                                color: MyColors.greyColor,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

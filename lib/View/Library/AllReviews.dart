@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-
-import '../../Cubit/Home/HomeScreenViewModel.dart';
 import '../../Cubit/Home/ReviewViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Models/Requests/ReviewRequest.dart';
 import '../../Utils/MyColors.dart';
-import '../../Utils/dialog.dart';
-import 'image.dart';
+
 
 void showAllReviewsSheet(BuildContext context, String bookId) {
   bool isWritingReview = false;
@@ -292,7 +288,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                                           'assets/images/star.svg'),
                                       SizedBox(width: 4.w,),
                                       Text(
-                                        "${overallScore}",
+                                        overallScore.toStringAsFixed(1),  // ← رقم بعشري واحد
                                         style: TextStyle(
                                           fontSize: 20.sp,
                                           fontWeight: FontWeight.w700,

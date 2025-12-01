@@ -50,8 +50,8 @@ class NotificationCard extends StatelessWidget {
                   child: Center(
                     child: Image.asset(
                       'assets/images/Fire.png',
-                      width: 24,
-                      height: 24,
+                      width: 24.w,
+                      height: 24.h,
                       // color: MyColors.whiteColor,
                     ),
                   ),
@@ -114,6 +114,7 @@ class NotificationCard extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(height: 4.h,)
 
       ],
     );

@@ -789,7 +789,6 @@ class ApiManager{
     }
   }
 
-
   Future<Either<LoginError, BookReviewResponse>> getBookReview(String bookId) async {
     final connectivityResult = await Connectivity().checkConnectivity();
 
@@ -844,7 +843,6 @@ class ApiManager{
       );
     }
   }
-
 
   Future<Either<LoginError, SaveBookResponse>> saveBook(SaveBookRequest request) async {
     final connectivityResult = await Connectivity().checkConnectivity();
