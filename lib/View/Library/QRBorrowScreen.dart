@@ -169,8 +169,10 @@ class _QRBorrowScreenState extends State<QRBorrowScreen> {
 
                   Image.network(widget.borrowData.qrCodeBorrow!,
                   height: 200.h,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset("assets/images/book.png", height: 180.h,);
+                    errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return _buildImagePlaceholder();
                     },
                   ),
                 ),
@@ -235,10 +237,12 @@ class _QRBorrowScreenState extends State<QRBorrowScreen> {
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(8.r),
-                            child: Image.network(widget.borrowData.borrow?.book!.mainImage ??'assets/images/book.png',
+                            child: Image.network("${widget.borrowData.borrow?.book!.mainImage}",
                               height: 200.h,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset("assets/images/book.png", height: 180.h,);
+                              errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return _buildImagePlaceholder();
                               },
                             ),
                           ),
@@ -272,6 +276,24 @@ class _QRBorrowScreenState extends State<QRBorrowScreen> {
           ),
         ),
       )),
+    );
+  }
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
+      ),
     );
   }
 }

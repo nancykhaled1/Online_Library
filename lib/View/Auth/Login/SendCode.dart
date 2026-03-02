@@ -23,15 +23,7 @@ class SendCode extends StatefulWidget {
 
 class _SendCodeState extends State<SendCode> {
    String? code;
-   // late SendCodeCubit cubit;
-   //
-   //
-   //
-   // @override
-   // void dispose() {
-   //   cubit.clear();
-   //   super.dispose();
-   // }
+
 
 
   @override

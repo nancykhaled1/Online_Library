@@ -33,34 +33,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.initState();
     registerCubit = context.read<RegisterCubit>();
   }
-
-  // @override
-  // void dispose() {
-  //   registerCubit.clearForm();
-  //   super.dispose();
-  // }
-
-
   final _formKey = GlobalKey<FormState>();
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<RegisterCubit, States>(
       listener: (context, state) {
         if (state is ErrorState) {
           showOverlayMessage(context, state.errorMessage!, isError: true);
-
         }
-
         else if (state is RegisterSuccessState) {
           showOverlayMessage(
             context,
             state.response.data!.message!,
             isError: false,
           );
+          context.read<RegisterCubit>().clearForm();
 
           final userId = state.response.data?.userId; // استبدل بالاسم المناسب
           Navigator.push(
@@ -76,9 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final viewModel = context.read<RegisterCubit>();
         return WillPopScope(
           onWillPop: () async {
-            // هنا بتتحكمى هل ترجعى ولا لا
-            return false; // ❌ مش هيرجع
-            // return true;  ✅ هيرجع
+            return false;
           },
           child: Scaffold(
             backgroundColor: MyColors.whiteColor,
@@ -88,7 +73,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🔹 Logo & App name
                     Center(
                       child: Image.asset(
                         "assets/images/logo.png",
@@ -96,12 +80,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 150.h,
                       ),
                     ),
-
-
-
-
-
-                    // 🔹 Welcome text
                     Text(
                       "Create your account",
                       style: TextStyle(
@@ -119,9 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: MyColors.greyColor
                       ),
                     ),
-
                     SizedBox(height: 40.h),
-
                     Form(
                       key:_formKey,
                       child: Column(
@@ -240,16 +216,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                             SizedBox(height: 20.h),
-
                             buildGenderDropdown(viewModel),
-
                             SizedBox(height: 30.h),
-
-
-
-
-
-                            // 🔹 Login button
                             ElevatedButton(
                               onPressed: state is LoadingState
                                   ? null
@@ -271,19 +239,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               child:
-                              // state is LoadingState
-                              //     ? SizedBox(
-                              //   width: 50.w,
-                              //   height: 20.w,
-                              //   child: CircularProgressIndicator(
-                              //     strokeWidth: 2,
-                              //     valueColor:
-                              //     AlwaysStoppedAnimation<Color>(
-                              //       MyColors.whiteColor,
-                              //     ),
-                              //   ),
-                              // )
-                              //     :
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -297,18 +252,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ],
                               ),
-
-
-
                             ),
                           ]
                       ),
                     ),
                     // 🔹 Email field
-
-
                     SizedBox(height: 16.h),
-
                     // 🔹 Google login button
                     BlocConsumer<GoogleCubit, States>(
                       listener: (context, state)  async {
@@ -370,7 +319,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     SizedBox(height: 50.h),
-
                     // 🔹 Register
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -400,7 +348,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 fontSize: 13.sp,
                                 color: MyColors.primaryColor,
                                 fontWeight: FontWeight.w500
-
                             ),
                           ),
                         ),
@@ -478,15 +425,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Row(
                     children: [
-                      // SvgPicture.asset(
-                      //   'assets/images/level.svg',
-                      //   width: 15.sp,
-                      //   height: 15.sp,
-                      //   colorFilter: ColorFilter.mode(
-                      //     Color(0xFF7A7A7A),
-                      //     BlendMode.srcIn,
-                      //   ),
-                      // ),
                       SizedBox(width: 20.w),
                       Text(
                         item,

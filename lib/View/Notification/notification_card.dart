@@ -32,7 +32,7 @@ class NotificationCard extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(10.r),
           decoration: BoxDecoration(
-              color: read ? MyColors.whiteColor : MyColors.outColor,
+              color: read ? MyColors.softGreyColor : MyColors.outColor,
               borderRadius: BorderRadius.circular(10.r)
           ),
           child: Row(
@@ -76,7 +76,7 @@ class NotificationCard extends StatelessWidget {
                       SizedBox(height: 8.h),
                       Text(
                         body,
-                        maxLines: 1, // 👈 ياخد سطر واحد بس
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.sp,

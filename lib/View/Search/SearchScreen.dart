@@ -233,9 +233,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                         image: NetworkImage(book.mainImage ?? ""),
                                         height: 90.h,
                                         width: 60.w,
-                                        imageErrorBuilder: (context, error, stackTrace) {
-                                          return Image.asset("assets/images/nofound.png");
-                                        },
+                                        imageErrorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+
                                       ),
 
                                       // Image.network(
@@ -325,6 +324,24 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
       ),
     );
   }

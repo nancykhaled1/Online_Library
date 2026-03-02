@@ -7,8 +7,10 @@ import 'package:online_library_app/Cubit/MyShelf/BorrowViewModel.dart';
 import 'package:online_library_app/Cubit/States/States.dart';
 
 import '../../Cubit/MyShelf/SaveListViewModel.dart';
+import '../../Utils/ErrorWidget.dart';
 import '../../Utils/MyColors.dart';
 import '../Library/BookDetails.dart';
+import 'LateScreen.dart';
 import 'OnBorrowScreen.dart';
 import 'ReturnedScreen.dart';
 
@@ -26,7 +28,7 @@ class MyShelfScreen extends StatefulWidget {
 class _MyShelfScreenState extends State<MyShelfScreen> {
   int selectedIndex = 0; // tab المختارة حاليًا
 
-  final List<String> tabs = ["Saved list", "On borrow", "Returned"];
+  final List<String> tabs = ["Saved list", "On borrow", "Returned","Late"];
 
   @override
   void initState() {
@@ -39,26 +41,22 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.whiteColor,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80.h),
-        child: AppBar(
-          backgroundColor: MyColors.whiteColor,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Text(
-            "My Shelf",
-            style: TextStyle(
-              color: MyColors.blackColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 24.sp,
-            ),
-          ),
-        ),
-      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w,
+            vertical: 16.h
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('My Shelf',
+              style: TextStyle(
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                  color: MyColors.blackColor
+              ),
+            ),
+            SizedBox(height: 25.h,),
+
             /// -------- Tabs --------
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -117,6 +115,7 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                   _buildSavedList(),
                   _buildOnBorrowList(),
                   _buildReturnedList(),
+                  _buildLateList()
                 ],
               ),
             ),
@@ -137,38 +136,24 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final error = state.errorMessage;
 
             if (error == "No Internet Connection") {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                    width: 200,
-                    height: 200,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "No internet connection",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: MyColors.greyColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Noto Kufi Arabic",
-                    ),
-                  ),
-                ],
+              return AppErrorWidget(
+                imagePath: "assets/images/noconnection.svg",
+                title: "No internet connection",
+                description: "Please check your network and try again",
+                onRetry: () {
+                  context.read<SaveListCubit>().getSaveBooks();
+                },
               );
             } else {
-              return Center(
-                child: Text(
-                  "Please, Try again later",
-                  style: TextStyle(
-                    color: MyColors.greyColor,
-                    fontSize: 16.sp,
-                  ),
-                ),
+              return AppErrorWidget(
+                imagePath: "assets/images/error.svg",
+                title: "Something went wrong",
+                description: "Please try again later",
+                onRetry: () {
+                  context.read<SaveListCubit>().getSaveBooks();
+                },
               );
             }
-
           }
           else if (state is AllSaveBookSuccessState) {
             final saved = state.favorite;
@@ -233,10 +218,12 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(8.r),
-                              child:  Image.network(save.bookId?.mainImage ??'assets/images/book.png',
+                              child:  Image.network("${save.bookId?.mainImage}",
                                 height: 200.h,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset("assets/images/book.png", height: 180.h,);
+                                errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return _buildImagePlaceholder();
                                 },
                               ),
 
@@ -291,38 +278,24 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final error = state.errorMessage;
 
             if (error == "No Internet Connection") {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                    width: 200,
-                    height: 200,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "No internet connection",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: MyColors.greyColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Noto Kufi Arabic",
-                    ),
-                  ),
-                ],
+              return AppErrorWidget(
+                imagePath: "assets/images/noconnection.svg",
+                title: "No internet connection",
+                description: "Please check your network and try again",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
               );
             } else {
-              return Center(
-                child: Text(
-                  "Please, Try again later",
-                  style: TextStyle(
-                    color: MyColors.greyColor,
-                    fontSize: 16.sp,
-                  ),
-                ),
+              return AppErrorWidget(
+                imagePath: "assets/images/error.svg",
+                title: "Something went wrong",
+                description: "Please try again later",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
               );
             }
-
           }
           else if (state is GetBorrowBooksSuccessState) {
             final borrow = state.borrow;
@@ -360,6 +333,8 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                 final formattedTime = DateFormat(
                   'HH:mm',
                 ).format(parsedDate);
+
+                final imageUrl = borrowBook.bookId?.mainImage;
                 return GestureDetector(
                   onTap: (){
                     Navigator.of(context).pushReplacement(
@@ -396,13 +371,17 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(8.r),
-                              child: //buildImage(borrowBook.bookId?.mainImage)
-                              Image.network(borrowBook.bookId!.mainImage ??'assets/images/book.png',
+                              child: imageUrl != null && imageUrl.isNotEmpty
+                                  ? Image.network(
+                                imageUrl,
                                 height: 200.h,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset("assets/images/book.png", height: 180.h,);
+                                errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return _buildImagePlaceholder();
                                 },
-                              ),
+                              )
+                                  : _buildImagePlaceholder(),
                             ),
                           ),
                           SizedBox(height: 8.h),
@@ -469,6 +448,188 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
 
   }
 
+  Widget _buildLateList() {
+    return BlocBuilder<BorrowCubit, States>(
+        builder: (context,state){
+          if (state is LoadingState) {
+            return Center(child: CircularProgressIndicator());
+          }
+          else if (state is ErrorState) {
+            final error = state.errorMessage;
+
+            if (error == "No Internet Connection") {
+              return AppErrorWidget(
+                imagePath: "assets/images/noconnection.svg",
+                title: "No internet connection",
+                description: "Please check your network and try again",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
+              );
+            } else {
+              return AppErrorWidget(
+                imagePath: "assets/images/error.svg",
+                title: "Something went wrong",
+                description: "Please try again later",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
+              );
+            }
+          }
+          else if (state is GetBorrowBooksSuccessState) {
+            final late = state.late;
+            if (late.isEmpty) {
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/nofound.png'),
+                    SizedBox(height: 10.h,),
+                    Text(
+                      "No late books!",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        color: MyColors.blackColor,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return ListView.separated(
+              separatorBuilder: (_, __) => SizedBox(height: 10.h),
+              // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+              itemCount: late.length,
+              itemBuilder: (context, index) {
+                final lateBook = late[index];
+                final parsedDate =
+                DateTime.parse(lateBook.mustReturnDate!).toLocal();
+                final formattedDate = DateFormat(
+                  'dd/MM',
+                ).format(parsedDate);
+
+                final formattedTime = DateFormat(
+                  'HH:mm',
+                ).format(parsedDate);
+
+                final imageUrl = lateBook.bookId?.mainImage;
+
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).pushReplacement(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => LateScreen(lateBook: lateBook,),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    //padding: EdgeInsets.all(20.r),
+                    width: double.infinity,
+                    // height: 70.h,
+                    decoration: BoxDecoration(
+                      color: MyColors.whiteColor,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                          color: MyColors.outColor
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.r),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height:150,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: MyColors.dividerColor,
+                              borderRadius: BorderRadius.circular(12.r),
+
+                            ),
+
+                      child: Padding(
+                      padding: EdgeInsets.all(8.r),
+                      child: imageUrl != null && imageUrl.isNotEmpty
+                          ? Image.network(
+                        imageUrl,
+                        height: 200.h,
+                        errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return _buildImagePlaceholder();
+                        },
+                      )
+                          : _buildImagePlaceholder(),
+                    ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            lateBook.bookId?.name ?? 'no name',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w800,
+                                color: MyColors.blackColor
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Text(
+                            lateBook.bookId?.writer ??'no writer',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: MyColors.greyColor
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Row(
+                            children: [
+                              Container(
+                                width: 8.w,
+                                height: 8.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.red, // لون الدائرة
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                "Late (Returned in $formattedDate at $formattedTime)",
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+
+
+              },
+            );
+          }
+          return Container();
+        }
+    );
+
+
+
+
+
+
+
+
+  }
+
   Widget _buildReturnedList() {
     return BlocBuilder<BorrowCubit, States>(
         builder: (context,state){
@@ -479,38 +640,24 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
             final error = state.errorMessage;
 
             if (error == "No Internet Connection") {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                    width: 200,
-                    height: 200,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "No internet connection",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: MyColors.greyColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Noto Kufi Arabic",
-                    ),
-                  ),
-                ],
+              return AppErrorWidget(
+                imagePath: "assets/images/noconnection.svg",
+                title: "No internet connection",
+                description: "Please check your network and try again",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
               );
             } else {
-              return Center(
-                child: Text(
-                  "Please, Try again later",
-                  style: TextStyle(
-                    color: MyColors.greyColor,
-                    fontSize: 16.sp,
-                  ),
-                ),
+              return AppErrorWidget(
+                imagePath: "assets/images/error.svg",
+                title: "Something went wrong",
+                description: "Please try again later",
+                onRetry: () {
+                  context.read<BorrowCubit>().getBorrowBooks();
+                },
               );
             }
-
           }
           else if (state is GetBorrowBooksSuccessState) {
             final returned = state.returned;
@@ -548,6 +695,8 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                 final formattedTime = DateFormat(
                   'HH:mm',
                 ).format(parsedDate);
+
+                final imageUrl = returnedBook.bookId?.mainImage;
                 return GestureDetector(
                   onTap: (){
                     Navigator.of(context).pushReplacement(
@@ -584,12 +733,17 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(8.r),
-                              child:  Image.network(returnedBook.bookId!.mainImage ??'assets/images/book.png',
+                              child: imageUrl != null && imageUrl.isNotEmpty
+                                  ? Image.network(
+                                imageUrl,
                                 height: 200.h,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset("assets/images/book.png", height: 180.h,);
+                                errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return _buildImagePlaceholder();
                                 },
-                              ),
+                              )
+                                  : _buildImagePlaceholder(),
                             ),
                           ),
                           SizedBox(height: 8.h),
@@ -649,5 +803,24 @@ class _MyShelfScreenState extends State<MyShelfScreen> {
 
 
 
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
+      ),
+    );
   }
 }

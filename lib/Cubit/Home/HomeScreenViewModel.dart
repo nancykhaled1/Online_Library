@@ -11,69 +11,37 @@ import '../States/States.dart';
 
 class HomeScreenCubit extends Cubit<States> {
   final AllCategoriesRepository repository;
-
   HomeScreenCubit(this.repository) : super(InitialState());
   List<Reviews> review = [];
-
   List<Children> children = [];
-
-
-
 
   Future<void> loadHomeData() async {
     emit(LoadingState(loadingMessage: "Loading..."));
-
     try {
       // 1) Call categories
       final catEither = await repository.getAllCategories();
-
       List<Categories> categories = [];
       catEither.fold(
             (l) => emit(ErrorState(errorMessage: l.error?.message)),
             (response) {
-          categories = response.data?.categories ?? [];
-        },
-      );
-
+          categories = response.data?.categories ?? [];},);
       List<Parents> parents = [];
       catEither.fold(
             (l) => emit(ErrorState(errorMessage: l.error?.message)),
             (response) {
-              parents = response.data?.parents ?? [];
-        },
-      );
-
+              parents = response.data?.parents ?? [];},);
       // 2) Call books only if categories loaded successfully
       final booksEither = await repository.getAllBooks();
-
       List<Books> books = [];
       booksEither.fold(
             (l) => emit(ErrorState(errorMessage: l.error?.message)),
             (response) {
-          books = response.data?.books ?? [];
-        },
-      );
-
-
+          books = response.data?.books ?? [];},);
       // 3) Final emit — DONE
-      emit(HomeDataSuccessState(
-         categories,
-         books,
-        parents
-      ));
-
+      emit(HomeDataSuccessState(categories, books, parents));
     } catch (e) {
       emit(ErrorState(errorMessage: e.toString()));
-    }
-  }
-
-
-
-
-
-
-
-
+    }}
   Future<void> getBookDetails(String bookId) async {
     emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
 
@@ -88,9 +56,6 @@ class HomeScreenCubit extends Cubit<States> {
 
     );
   }
-
-
-
   Future<void> getBookReview(String bookId) async {
     emit(LoadingState(loadingMessage: 'جارى التحميل')); // ⬅️ عشان يمسح القديم ويعرض loader
 
@@ -106,9 +71,6 @@ class HomeScreenCubit extends Cubit<States> {
 
     );
   }
-
-
-
 }
 
 

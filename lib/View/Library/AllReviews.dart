@@ -228,7 +228,7 @@ void showAllReviewsSheet(BuildContext context, String bookId) {
                         } else {
                           return Center(
                             child: Text(
-                              "Please, Try again later",
+                              error!,
                               style: TextStyle(
                                 color: MyColors.greyColor,
                                 fontSize: 16.sp,

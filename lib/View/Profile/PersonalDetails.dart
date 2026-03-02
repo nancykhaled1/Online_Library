@@ -5,8 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:online_library_app/View/Home/home.dart';
 import '../../Cubit/Profile/ProfileViewModel.dart';
 import '../../Cubit/States/States.dart';
+import '../../Utils/ErrorWidget.dart';
 import '../../Utils/MyColors.dart';
 import '../../Utils/TextField.dart';
+import '../../Utils/dialog.dart';
 import 'ProfileScreen.dart';
 
 
@@ -100,198 +102,275 @@ class _PersonalDetailsState extends State<PersonalDetails> {
             horizontal: 16.w,
             vertical: 16.h
           ),
-          child: BlocBuilder<ProfileViewModel, States>(
-            builder: (context, state) {
-              final viewModel = context.read<ProfileViewModel>();
-
-              if (state is LoadingState) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+          child: BlocListener<ProfileViewModel, States>(
+            listener: (context, state){
+              if (state is UpdateProfileSuccessState) {
+                showOverlayMessage(context, "Your profile updated successfully", isError: false);
               }
+            },
+            child: BlocBuilder<ProfileViewModel, States>(
+              builder: (context, state) {
+                final viewModel = context.read<ProfileViewModel>();
 
-              else if (state is ErrorState) {
-                final error = state.errorMessage;
-
-                if (error == "No Internet Connection") {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: SvgPicture.asset(
-                          "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                          width: 200,
-                          height: 200,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        "No internet connection",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: MyColors.greyColor,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Noto Kufi Arabic",
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
+                if (state is LoadingState) {
                   return Center(
-                    child: Text(
-                      "Please, Try again later",
-                      style: TextStyle(
-                        color: MyColors.greyColor,
-                        fontSize: 16.sp,
-                      ),
-                    ),
+                    child: CircularProgressIndicator(),
                   );
                 }
 
-              }
-              return Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: MyColors.whiteColor,
-                      child: ClipOval(
-                        child: (viewModel.image != null)
-                            ? Image.file(
-                          viewModel.image!,
-                          width: 100.w,
-                          height: 100.h,
-                          fit: BoxFit.cover,
-                        )
-                            : (viewModel.profileImageUrl != null && viewModel.profileImageUrl!.startsWith('http'))
-                            ? Image.network(
-                          viewModel.profileImageUrl!,
-                          width: 100.w,
-                          height: 100.h,
-                          fit: BoxFit.cover,
-                          key: UniqueKey(),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: MyColors.primaryColor,
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) => Image.asset(
-                            'assets/images/personalImage.png',
-                            fit: BoxFit.cover,
+                else if (state is ErrorState) {
+                  final error = state.errorMessage;
+
+                  if (error == "No Internet Connection") {
+                    return AppErrorWidget(
+                      imagePath: "assets/images/noconnection.svg",
+                      title: "No internet connection",
+                      description: "Please check your network and try again",
+                      onRetry: () {
+                        context.read<ProfileViewModel>().getProfile();
+                      },
+                    );
+                  } else {
+                    return AppErrorWidget(
+                      imagePath: "assets/images/error.svg",
+                      title: "Something went wrong",
+                      description: "Please try again later",
+                      onRetry: () {
+                        context.read<ProfileViewModel>().getProfile();
+                      },
+                    );
+                  }
+                }
+
+                return Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 50.r,
+                        backgroundColor: MyColors.whiteColor,
+                        child: ClipOval(
+                          child: (viewModel.image != null)
+                              ? Image.file(
+                            viewModel.image!,
                             width: 100.w,
                             height: 100.h,
+                            fit: BoxFit.cover,
+                          )
+                              : (viewModel.profileImageUrl != null && viewModel.profileImageUrl!.startsWith('http'))
+                              ? Image.network(
+                            viewModel.profileImageUrl!,
+                            width: 100.w,
+                            height: 100.h,
+                            fit: BoxFit.cover,
+                            key: UniqueKey(),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: MyColors.primaryColor,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) => Image.asset(
+                              'assets/images/personalImage.png',
+                              fit: BoxFit.cover,
+                              width: 100.w,
+                              height: 100.h,
+                            ),
+                          )
+                              : Image.asset(
+                            'assets/images/personalImage.png',
+                            width: 100.w,
+                            height: 100.h,
+                            fit: BoxFit.cover,
                           ),
-                        )
-                            : Image.asset(
-                          'assets/images/personalImage.png',
-                          width: 100.w,
-                          height: 100.h,
-                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10.h),
+                      SizedBox(height: 10.h),
 
-                    TextButton(
-                      onPressed: viewModel.isEditable ? () {
-                        viewModel.pickProfileImage();
-                      } : null,
-                      child: viewModel.isEditable ? Text(
-                        'change photo profile',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.sp,
-                         color: MyColors.primaryColor
-                         // color: viewModel.isEditable ? MyColors.primaryColor : Colors.grey,
-                        ),
-                      ) : Container(),
-                    ),
+                      TextButton(
+                        onPressed: viewModel.isEditable ? () {
+                          viewModel.pickProfileImage();
+                        } : null,
+                        child: viewModel.isEditable ? Text(
+                          'change photo profile',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.sp,
+                           color: MyColors.primaryColor
+                           // color: viewModel.isEditable ? MyColors.primaryColor : Colors.grey,
+                          ),
+                        ) : Container(),
+                      ),
 
-                    SizedBox(height: 10.h),
+                      SizedBox(height: 10.h),
 
 
-                    CustomTextField(
-                      keyboardType: TextInputType.text,
-                      label: "Full Name",
-                      hintText: "Input your name",
-                      readonly: !viewModel.isEditable,
-                      prefixIcon: Icons.perm_identity,
-                      controller: viewModel.userNameController,
-                      validator: (text) {
-                        if (text!.isEmpty || text.trim().isEmpty) {
-                          return 'enter your name';
-                        }
-                        return null;
-                      },
+                      CustomTextField(
+                        keyboardType: TextInputType.text,
+                        label: "Full Name",
+                        hintText: "Input your name",
+                        readonly: !viewModel.isEditable,
+                        prefixIcon: Icons.perm_identity,
+                        controller: viewModel.userNameController,
+                        validator: (text) {
+                          if (text!.isEmpty || text.trim().isEmpty) {
+                            return 'enter your name';
+                          }
+                          return null;
+                        },
 
-                    ),
-                    SizedBox(height: 20.h),
-                    CustomTextField(
-                      readonly: !viewModel.isEditable,
-                      keyboardType: TextInputType.emailAddress,
-                      label: "Email",
-                      prefixIcon: Icons.email_outlined,
-                      hintText: "Input your email",
-                      controller: viewModel.emailController,
-                      validator: (text) {
-                        if (text!.isEmpty || text.trim().isEmpty) {
-                          return 'enter your correct email';
-                        }
-                        bool emailValid = RegExp(
-                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                        ).hasMatch(text);
-                        if (!emailValid) {
-                          return 'enter your correct email';
-                        }
-                        return null;
-                      },
+                      ),
+                      SizedBox(height: 20.h),
+                      CustomTextField(
+                        readonly: !viewModel.isEditable,
+                        keyboardType: TextInputType.emailAddress,
+                        label: "Email",
+                        prefixIcon: Icons.email_outlined,
+                        hintText: "Input your email",
+                        controller: viewModel.emailController,
+                        validator: (text) {
+                          if (text!.isEmpty || text.trim().isEmpty) {
+                            return 'enter your correct email';
+                          }
+                          bool emailValid = RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                          ).hasMatch(text);
+                          if (!emailValid) {
+                            return 'enter your correct email';
+                          }
+                          return null;
+                        },
 
-                    ),
-                    SizedBox(height: 20.h),
-                    CustomTextField(
-                      prefixIcon: Icons.phone_android,
+                      ),
+                      SizedBox(height: 20.h),
+                      CustomTextField(
+                        prefixIcon: Icons.phone_android,
 
-                      readonly: !viewModel.isEditable,
-                      keyboardType: TextInputType.phone,
-                      label: "Phone",
-                      hintText: "Input your phone",
-                      controller: viewModel.phoneController,
-                      validator: (text) {
-                        if (text == null || text.isEmpty) {
-                          return 'Please enter your password';
-                        }
+                        readonly: !viewModel.isEditable,
+                        keyboardType: TextInputType.phone,
+                        label: "Phone",
+                        hintText: "Input your phone",
+                        controller: viewModel.phoneController,
+                        validator: (text) {
+                          if (text == null || text.isEmpty) {
+                            return 'Please enter your password';
+                          }
 
-                        return null;
-                      },
+                          return null;
+                        },
 
-                    ),
-                    SizedBox(height: 20.h),
-                    CustomTextField(
-                      readonly: true,
-                      label: "Gender",
-                      hintText: "Input your gender",
-                      prefixIcon: Icons.person,
-                      controller: viewModel.genderController,
-                      validator: (text) {
-                        if (text == null || text.isEmpty || text.trim().isEmpty) {
-                          return 'please choose your gender';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
+                      ),
+                      SizedBox(height: 20.h),
+                      buildGenderDropdown(viewModel),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ),
       )),
     );
   }
+
+  Widget buildGenderDropdown(ProfileViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // الحقل الرئيسي
+        GestureDetector(
+          onTap: viewModel.isEditable
+              ? () {
+            setState(() {
+              viewModel.showDropdownlevel =
+              !viewModel.showDropdownlevel;
+            });
+          }
+              : null,
+          child: AbsorbPointer(
+            child: CustomTextField(
+              keyboardType: TextInputType.visiblePassword,
+              label: "Gender",
+              hintText: "Choose your gender",
+              prefixIcon: Icons.person,
+              controller: viewModel.genderController,
+              suffixIcon: viewModel.isEditable
+                  ? Icon(
+                viewModel.showDropdownlevel
+                    ? Icons.arrow_drop_up
+                    : Icons.arrow_drop_down,
+                size: 35.sp,
+                color: MyColors.blackColor,
+              )
+                  : null,
+
+              readonly: true,
+              validator: (text) {
+                if (text == null || text.isEmpty || text.trim().isEmpty) {
+                  return 'please choose your gender';
+                }
+                return null;
+              },
+            ),
+
+          ),
+        ),
+
+        // القائمة المنسدلة
+        if (viewModel.showDropdownlevel && viewModel.isEditable)
+          Column(
+            children:
+            viewModel.genders.map((item) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    viewModel.genderController.text = item;
+                    viewModel.showDropdownlevel = false;
+                  });
+                },
+
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    border: Border.symmetric(
+                      horizontal: BorderSide(color: MyColors.softGreyColor),
+                    ),
+                    // borderRadius: BorderRadius.circular(10.r),
+                    color: MyColors.whiteColor,
+                  ),
+                  child: Row(
+                    children: [
+                      // SvgPicture.asset(
+                      //   'assets/images/level.svg',
+                      //   width: 15.sp,
+                      //   height: 15.sp,
+                      //   colorFilter: ColorFilter.mode(
+                      //     Color(0xFF7A7A7A),
+                      //     BlendMode.srcIn,
+                      //   ),
+                      // ),
+                      SizedBox(width: 20.w),
+                      Text(
+                        item,
+                        style: TextStyle(
+                          color: MyColors.greyColor,
+                          fontFamily: "Noto Kufi Arabic",
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+
 }

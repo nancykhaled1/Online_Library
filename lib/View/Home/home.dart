@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:online_library_app/View/Search/SearchScreen.dart';
-
 import '../../Cubit/Notification/NotificationViewModel.dart';
 import '../../Services/Local/SharedPreference.dart';
 import '../../Utils/MyColors.dart';
@@ -95,10 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xffF5F5F5),
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _pages,
-        ),
+        body: _pages[_currentIndex],
 
         bottomNavigationBar: Container(
 

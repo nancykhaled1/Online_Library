@@ -34,11 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     loginCubit = context.read<LoginScreenCubit>();
   }
 
-  // @override
-  // void dispose() {
-  //   loginCubit.clearForm();
-  //   super.dispose();
-  // }
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -85,12 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 150.h,
                       ),
                     ),
-
-                  //  SizedBox(height: 30.h),
-
-
-
-                    // 🔹 Welcome text
                     Text(
                       "Welcome back!",
                       style: TextStyle(
@@ -136,8 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             ),
                             SizedBox(height: 20.h),
-
-                            // 🔹 Password field
                             CustomTextField(
                               keyboardType: TextInputType.visiblePassword,
                               label: "Password",

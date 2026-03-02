@@ -26,47 +26,11 @@ class VerifyEmail extends StatefulWidget {
 
 class _VerifyEmailState extends State<VerifyEmail> {
 
-  int totalSeconds = 60;
-  Timer? timer;
-  bool canResend = false;
 
-
-  @override
-  void initState() {
-    super.initState();
-
-    timer = Timer.periodic(Duration(seconds: 1), (t) {
-      if (totalSeconds == 0) {
-        t.cancel();
-        setState(() {
-          canResend = true;   // 🔥 إظهار زر resend
-        });
-      } else {
-        setState(() {
-          totalSeconds--;
-        });
-      }
-    });
-
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  String formatTime(int seconds) {
-    int h = seconds ~/ 3600;
-    int m = (seconds % 3600) ~/ 60;
-    int s = seconds % 60;
-    return "${h.toString().padLeft(2, '0')} : ${m.toString().padLeft(2, '0')} : ${s.toString().padLeft(2, '0')}";
-  }
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.read<VerifyEmailCubit>();
-    final reSend = context.read<ForgetPassScreenCubit>();
 
 
     return BlocConsumer<VerifyEmailCubit, States>(
@@ -90,6 +54,8 @@ class _VerifyEmailState extends State<VerifyEmail> {
               scrolledUnderElevation: 0,
               leading: IconButton(
                 onPressed: () {
+                  context.read<VerifyEmailCubit>().clear();
+
                   Navigator.of(context).pushReplacement(
                     PageRouteBuilder(
                       pageBuilder:
@@ -150,6 +116,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                             width: 47.w,
                             height: 45.h,
                             child: TextField(
+                              textInputAction: TextInputAction.next,
                               controller: viewModel.controllers[index],
                               focusNode: viewModel.focusNodes[index],
                               textAlign: TextAlign.center,
@@ -190,8 +157,9 @@ class _VerifyEmailState extends State<VerifyEmail> {
                                     FocusScope.of(context).previousFocus();
                                   }
                                 }
-                                 viewModel.checkCodeCompletion();
+                                viewModel.checkCodeCompletion();
                               },
+
                             ),
                           ),
                         );

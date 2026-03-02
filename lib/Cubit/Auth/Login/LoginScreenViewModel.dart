@@ -19,13 +19,10 @@ class LoginScreenCubit extends Cubit<States> {
   var loginFormKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
   bool isPasswordVisible = true;
 
   Future<void> login() async {
-
       emit(LoadingState(loadingMessage: "Loading..."));
-
       final request = LoginRequest(
         email: emailController.text,
         password: passwordController.text,
@@ -39,26 +36,14 @@ class LoginScreenCubit extends Cubit<States> {
           emit(ErrorState(errorMessage: error.error!.message));
         },
             (data) async {
-
-          //تخزين التوكن
           final token = data.data?.token;
           await TokenStorage.saveToken(token!);
           final savedToken = await TokenStorage.getToken();
           print("Saved token locally: $savedToken");
-
-          // //تخزين الرول
-          // final role = data.data?.role;
-          // await TokenStorage.saveRole(role!);
-          // final savedRole = await TokenStorage.getRole();
-          // print("Saved role locally: $savedRole");
-
-          //تخزين ال id
           final userId = data.data?.id;
           await TokenStorage.saveId(userId!);
           final savedUserId = await TokenStorage.getUserId();
           print("Saved id locally: $savedUserId");
-
-
           emit(LoginSuccessState(response: data));
         },
       );
@@ -69,7 +54,6 @@ class LoginScreenCubit extends Cubit<States> {
     emailController.clear();
     passwordController.clear();
     isPasswordVisible = true;
-
     emit(InitialState());
   }
 }

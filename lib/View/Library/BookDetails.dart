@@ -11,6 +11,7 @@ import '../../Cubit/Home/ReviewViewModel.dart';
 import '../../Cubit/MyShelf/SaveListViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Models/Requests/SaveBookRequest.dart';
+import '../../Utils/ErrorWidget.dart';
 import '../../Utils/MyColors.dart';
 import '../../Utils/dialog.dart';
 import '../Home/home.dart';
@@ -55,41 +56,30 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
           final error = state.errorMessage;
 
           if (error == "No Internet Connection") {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: SvgPicture.asset(
-                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                    width: 200,
-                    height: 200,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "No internet connection",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: MyColors.greyColor,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Noto Kufi Arabic",
-                  ),
-                ),
-              ],
+            return Scaffold(
+              body: AppErrorWidget(
+                imagePath: "assets/images/noconnection.svg",
+                title: "No internet connection",
+                description: "Please check your network and try again",
+                onRetry: () {
+                  context.read<HomeScreenCubit>().getBookDetails(widget.bookId);
+                  context.read<ReviewCubit>().getBookReview(widget.bookId);
+                },
+              ),
             );
           } else {
-            return Center(
-              child: Text(
-                "Please, Try again later",
-                style: TextStyle(
-                  color: MyColors.greyColor,
-                  fontSize: 16.sp,
-                ),
+            return Scaffold(
+              body: AppErrorWidget(
+                imagePath: "assets/images/error.svg",
+                title: "Something went wrong",
+                description: "Please try again later",
+                onRetry: () {
+                  context.read<HomeScreenCubit>().getBookDetails(widget.bookId);
+                  context.read<ReviewCubit>().getBookReview(widget.bookId);
+                },
               ),
             );
           }
-
         }
         if (state is BookDetailsSuccessState) {
           final book = state.book;
@@ -121,7 +111,10 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                   icon: Icon(Icons.arrow_back),
                 ),
               ),
-              body: SafeArea(
+              body:
+
+
+              SafeArea(
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,8 +135,11 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                 borderRadius: BorderRadius.circular(12.r),
                                 child: Image.network(
                                   book.gallery?[index] ?? book.mainImage!,
-                                  //fit: BoxFit.cover,
-                                  // width: double.infinity,
+                                  errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return _buildImagePlaceholder();
+                                  },
                                 ),
                               ),
                             );
@@ -318,43 +314,6 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                         builder: (context, state) {
                           if (state is LoadingState) {
                             return Center(child: CircularProgressIndicator());
-                          }
-                          else if (state is ErrorState) {
-                            final error = state.errorMessage;
-
-                            if (error == "No Internet Connection") {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Text(
-                                    "No internet connection",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: MyColors.greyColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Noto Kufi Arabic",
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return Center(
-                                child: Text(
-                                  "Please, Try again later",
-                                  style: TextStyle(
-                                    color: MyColors.greyColor,
-                                    fontSize: 16.sp,
-                                  ),
-                                ),
-                              );
-                            }
-
                           }
                           else if (state is GetReviewSuccessState) {
                             final reviews =
@@ -742,5 +701,22 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
       onBackgroundImageError: (_, __) {},
     );
   }
-
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
+      ),
+    );
+  }
 }

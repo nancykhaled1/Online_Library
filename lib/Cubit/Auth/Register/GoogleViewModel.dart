@@ -17,64 +17,77 @@ class GoogleCubit extends Cubit<States> {
 
   Future<void> signInWithGoogle() async {
     emit(LoadingState(loadingMessage: 'Loading........'));
+
     try {
       await _googleSignIn.signOut();
+      print('=== Starting Google Sign In ===');
 
       final account = await _googleSignIn.signIn();
-      print("ACCOUNT RESULT = $account");
+      print("Account: $account");
+
       if (account == null) {
         emit(ErrorState(errorMessage: 'Google sign in cancelled'));
         return;
       }
 
+      print("Email: ${account.email}");
+      print("Display Name: ${account.displayName}");
+
       final auth = await account.authentication;
+
+      print("Access Token: ${auth.accessToken}");
+      print("ID Token: ${auth.idToken}");
+
       final idToken = auth.idToken;
-      print("idToken: $idToken");
-
-
 
       if (idToken == null) {
+        print('=== ERROR: ID Token is NULL ===');
         emit(ErrorState(errorMessage: "No ID Token received from Google"));
         return;
       }
 
+      print("=== Sending request to backend ===");
+      print("Token length: ${idToken.length}");
 
-      print("Sending request to backend...");
+      final response = await repository.google(GoogleLoginRequest(token: idToken));
 
-      // ابعت idToken للباك اند
-      final response = await repository.google(GoogleLoginRequest(token: idToken, ));
-
-      print("Backend returned response: $response");
+      print("=== Backend Response ===");
+      print("Response: $response");
 
       response.fold(
-        // في حالة error
             (error) {
+          print("=== Backend Error ===");
+          print("Error: ${error.error?.message}");
           emit(ErrorState(errorMessage: error.error?.message ?? 'Login failed'));
         },
-        // في حالة success
             (googleResponse) async {
+          print("=== Backend Success ===");
+
           final token = googleResponse.token;
           await TokenStorage.saveToken(token);
-          final savedToken = await TokenStorage.getToken();
-          print("Saved token locally: $savedToken");
-
-
-
+          print("Saved token: $token");
 
           final id = googleResponse.user.id;
           await TokenStorage.saveId(id);
-          final savedId = await TokenStorage.getUserId();
-          print("Saved id locally: $savedId");
-
-
-
+          print("Saved user id: $id");
 
           emit(GoogleSuccessState(response: googleResponse));
-                },
+        },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print("=== Exception ===");
+      print("Error: $e");
+      print("StackTrace: $stackTrace");
       emit(ErrorState(errorMessage: "Error: $e"));
     }
   }
-}
 
+  Future<void> signOut() async {
+    try {
+      await _googleSignIn.signOut();
+      print("Signed out successfully");
+    } catch (e) {
+      print("Sign out error: $e");
+    }
+  }
+}

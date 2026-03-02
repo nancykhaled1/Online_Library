@@ -23,17 +23,14 @@ class ProfileViewModel extends Cubit<States> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController genderController = TextEditingController();
 
-
-
   bool showDropdownlevel = false;
-
-
 
   File? image;
   final ImagePicker _picker = ImagePicker();
   String? profileImageUrl;
 
 
+  List<String> genders = ["male", "female"];
 
 
 

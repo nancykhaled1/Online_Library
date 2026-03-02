@@ -177,8 +177,10 @@ class BorrowBooksSuccessState extends States {
 class GetBorrowBooksSuccessState extends States {
   final List<Borrowed> borrow;
   final List<Returned> returned;
+  final List<Late> late;
 
-  GetBorrowBooksSuccessState({required this.borrow,required this.returned});
+
+  GetBorrowBooksSuccessState({required this.borrow,required this.returned, required this.late});
 }
 
 

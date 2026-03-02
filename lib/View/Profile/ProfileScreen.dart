@@ -6,6 +6,7 @@ import 'package:online_library_app/View/Notification/notification_screen.dart';
 
 import '../../Cubit/Profile/ProfileViewModel.dart';
 import '../../Cubit/States/States.dart';
+import '../../Utils/ErrorWidget.dart';
 import '../../Utils/MyColors.dart';
 import 'AccountSettings.dart';
 import 'PersonalDetails.dart';
@@ -64,42 +65,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final error = state.errorMessage;
 
           if (error == "No Internet Connection") {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: SvgPicture.asset(
-                    "assets/images/noconnection.svg", // 🖼️ ضيفي صورة عندك
-                    width: 200,
-                    height: 200,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "No internet connection",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: MyColors.greyColor,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Noto Kufi Arabic",
-                  ),
-                ),
-              ],
+            return AppErrorWidget(
+              imagePath: "assets/images/noconnection.svg",
+              title: "No internet connection",
+              description: "Please check your network and try again",
+              onRetry: () {
+                context.read<ProfileViewModel>().getProfile();
+              },
             );
           } else {
-            return Center(
-              child: Text(
-                "Please, Try again later",
-                style: TextStyle(
-                  color: MyColors.greyColor,
-                  fontSize: 16.sp,
-                ),
-              ),
+            return AppErrorWidget(
+              imagePath: "assets/images/error.svg",
+              title: "Something went wrong",
+              description: "Please try again later",
+              onRetry: () {
+                context.read<ProfileViewModel>().getProfile();
+              },
             );
           }
-
-        }else {
+        }
+        else {
           return
             Row(
               children: [

@@ -19,13 +19,10 @@ class SendCodeCubit extends Cubit<States> {
   bool isCodeComplete = false;
   void checkCodeCompletion() {
     isCodeComplete = controllers.every((controller) => controller.text.isNotEmpty);
-    emit(InitialState()); // علشان يعيد بناء الـ UI ويعرف إن في تغيير
+    emit(InitialState());
   }
 
   String lastEnteredCode = "";
-
-
-
 
   String getEnteredCode() {
     return controllers.map((e) => e.text).join();
@@ -33,14 +30,11 @@ class SendCodeCubit extends Cubit<States> {
 
   Future<void> resetPassword({required String email, required String code}) async {
     emit(LoadingState(loadingMessage: "Loading..."));
-
     final request = ResetPasswordRequest(
       email: email,
       code: code,
     );
-
     final response = await repository.resetPassword(request);
-
     response.fold(
           (error) {
         emit(ErrorState(errorMessage: error.error?.message));
@@ -60,12 +54,9 @@ class SendCodeCubit extends Cubit<States> {
     for (var controller in controllers) {
       controller.clear();
     }
-
     codeController.clear();
-
     isCodeComplete = false;
     lastEnteredCode = "";
-
     emit(InitialState()); // تحديث الـ UI
   }
 
