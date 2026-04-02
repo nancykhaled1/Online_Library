@@ -32,6 +32,7 @@ class LateScreen extends StatelessWidget{
     final borrowDate = DateFormat(
       'dd/MM',
     ).format(Date);
+    final imageUrl = lateBook.bookId!.mainImage ?? '';
     return WillPopScope(
       onWillPop: () async {
         // هنا بتتحكمى هل ترجعى ولا لا
@@ -120,12 +121,25 @@ class LateScreen extends StatelessWidget{
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(8.r),
-                          child: Image.network(lateBook.bookId!.mainImage ??'assets/images/book.png',
+                          child: imageUrl != null && imageUrl.isNotEmpty
+                              ? Image.network(
+                            imageUrl,
                             height: 200.h,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset("assets/images/book.png", height: 180.h,);
+                            errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return _buildImagePlaceholder();
                             },
-                          ),
+                          )
+                              : _buildImagePlaceholder(),
+
+
+                          // Image.network(lateBook.bookId!.mainImage ??'assets/images/book.png',
+                          //   height: 200.h,
+                          //   errorBuilder: (context, error, stackTrace) {
+                          //     return Image.asset("assets/images/book.png", height: 180.h,);
+                          //   },
+                          // ),
                         ),
                       ),
                       SizedBox(height: 12.h),
@@ -213,6 +227,24 @@ class LateScreen extends StatelessWidget{
           ),
         ),
       )
+      ),
+    );
+  }
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
       ),
     );
   }

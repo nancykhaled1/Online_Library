@@ -29,6 +29,7 @@ class ReturnedScreen extends StatelessWidget{
     final returnDate = DateFormat(
       'dd/MM',
     ).format(Date);
+    final imageUrl = returnedBook.bookId?.mainImage??'';
     return WillPopScope(
       onWillPop: () async {
         // هنا بتتحكمى هل ترجعى ولا لا
@@ -117,12 +118,17 @@ class ReturnedScreen extends StatelessWidget{
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(8.r),
-                          child: Image.network(returnedBook.bookId!.mainImage ??'assets/images/book.png',
+                          child: imageUrl != null && imageUrl.isNotEmpty
+                              ? Image.network(
+                            imageUrl,
                             height: 200.h,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset("assets/images/book.png", height: 180.h,);
+                            errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return _buildImagePlaceholder();
                             },
-                          ),
+                          )
+                              : _buildImagePlaceholder(),
                         ),
                       ),
                       SizedBox(height: 12.h),
@@ -143,50 +149,33 @@ class ReturnedScreen extends StatelessWidget{
                             color: MyColors.greyColor
                         ),
                       ),
-
                     ],
                   ),
                 ),
               ),
             ),
             SizedBox(height: 20.h),
-
           ],
         ),
-        // bottomNavigationBar: Padding(
-        //   padding: EdgeInsets.all(16.r),
-        //   child: ElevatedButton(
-        //     onPressed: (){
-        //       returnedSheet(context);
-        //     },
-        //     style: ElevatedButton.styleFrom(
-        //       backgroundColor: MyColors.primaryColor,
-        //       padding: EdgeInsets.symmetric(
-        //         vertical: 12.h,
-        //         horizontal: 16.w,
-        //       ),
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(50.r),
-        //       ),
-        //     ),
-        //     child:
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: [
-        //         Text(
-        //           "Return",
-        //           style: TextStyle(
-        //             fontSize: 14.sp,
-        //             color: MyColors.whiteColor,
-        //             fontWeight: FontWeight.w500,
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //
-        //   ),
-        // ),
       )
+      ),
+    );
+  }
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 120.w,
+      height: 120.h,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey[500],
       ),
     );
   }

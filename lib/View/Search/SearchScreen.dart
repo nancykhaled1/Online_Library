@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
 import '../../Cubit/Search/SearchScreenViewModel.dart';
 import '../../Cubit/States/States.dart';
 import '../../Utils/MyColors.dart';
@@ -234,7 +233,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                         height: 90.h,
                                         width: 60.w,
                                         imageErrorBuilder: (_, __, ___) => _buildImagePlaceholder(),
-
                                       ),
 
                                       // Image.network(
@@ -329,8 +327,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
   Widget _buildImagePlaceholder() {
     return Container(
-      width: 120.w,
-      height: 120.h,
+      width: 60.w,
+      height: 90.h,
       decoration: BoxDecoration(
         color: Colors.grey[300],
         borderRadius: const BorderRadius.only(
